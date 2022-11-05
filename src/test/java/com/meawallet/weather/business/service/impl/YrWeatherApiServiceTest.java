@@ -1,6 +1,7 @@
 package com.meawallet.weather.business.service.impl;
 
 import com.meawallet.weather.business.deserializer.WeatherApiDtoDeserializer;
+import com.meawallet.weather.business.handler.exception.WeatherApiServiceException;
 import com.meawallet.weather.business.util.YrWeatherApiServiceUtil;
 import com.meawallet.weather.model.WeatherApiDto;
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import static com.meawallet.weather.business.ConstantsStore.API_CALL_EXCEPTION_MESSAGE;
 import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_CALL_LOG;
 import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_RESPONSE_LOG;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
@@ -28,6 +31,7 @@ import static com.meawallet.weather.util.WeatherTestUtil.getUrlParamsNoALt;
 import static com.meawallet.weather.util.WeatherTestUtil.getUrlParamsWithAlt;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -127,6 +131,39 @@ class YrWeatherApiServiceTest {
         verify(util, times(1)).validateBody(responseEntity);
         verify(util, times(1)).validateResponseStatus(responseEntity);
         verify(deserializer, times(1)).deserializeApiResponse(responseEntity.getBody());
+        verifyNoMoreInteractions(util, deserializer, restTemplate);
+    }
+
+    @Test
+    void getByLatAndLonAndAlt_whenRestTemplateThrowsException_thenThrowWeatherApiServiceException(CapturedOutput output) {
+        ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
+        when(util.buildUrlParams(LAT, LON, null)).thenReturn(getUrlParamsNoALt());
+        when(util.buildRequestUrl(null, getUrlParamsNoALt())).thenReturn(WEATHER_API_URL_WITH_NO_ALT_PARAM);
+        when(util.getRequiredHeaders()).thenReturn(getRequiredHeaders());
+
+        when(restTemplate.exchange(
+                WEATHER_API_URL_WITH_NO_ALT_PARAM,
+                HttpMethod.GET,
+                new HttpEntity<>(null, getRequiredHeaders()),
+                String.class)
+        ).thenThrow(new RestClientException("Exception message"));
+
+        assertThatThrownBy(() -> victim.getByLatAndLonAndAlt(LAT, LON, null))
+                .isInstanceOf(WeatherApiServiceException.class)
+                .hasMessage(API_CALL_EXCEPTION_MESSAGE + "Exception message");
+
+        assertThat(output.getOut()).contains(WEATHER_API_CALL_LOG + WEATHER_API_URL_WITH_NO_ALT_PARAM);
+        assertThat(output.getOut()).doesNotContain(WEATHER_API_RESPONSE_LOG + responseEntity.getBody());
+        verify(util, times(1)).buildUrlParams(LAT, LON, null);
+        verify(util, times(1)).buildRequestUrl(null, getUrlParamsNoALt());
+        verify(util, times(1)).getRequiredHeaders();
+
+        verify(restTemplate, times(1)).exchange(
+                WEATHER_API_URL_WITH_NO_ALT_PARAM,
+                HttpMethod.GET,
+                new HttpEntity<>(null, getRequiredHeaders()),
+                String.class);
+
         verifyNoMoreInteractions(util, deserializer, restTemplate);
     }
 

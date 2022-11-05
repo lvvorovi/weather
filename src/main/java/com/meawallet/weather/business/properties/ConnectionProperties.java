@@ -1,4 +1,4 @@
-package com.meawallet.weather.business.config;
+package com.meawallet.weather.business.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

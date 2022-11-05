@@ -1,6 +1,7 @@
 package com.meawallet.weather.business.config;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.meawallet.weather.business.properties.ConnectionProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
