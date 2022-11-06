@@ -10,7 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherEntity;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class CustomWeatherMapperTest {

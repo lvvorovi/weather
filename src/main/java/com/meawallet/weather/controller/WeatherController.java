@@ -1,4 +1,4 @@
-package com.meawallet.weather.web.controller;
+package com.meawallet.weather.controller;
 
 
 import com.meawallet.weather.model.ErrorDto;

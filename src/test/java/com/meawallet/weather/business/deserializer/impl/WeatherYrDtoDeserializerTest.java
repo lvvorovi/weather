@@ -17,7 +17,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_DESERIALIZED_MESSAGE;
 import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_FAIL_MESSAGE;
 import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_NULL_MESSAGE;
-import static com.meawallet.weather.util.WeatherTestUtil.completeNodeString;
+import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,15 +45,15 @@ class WeatherYrDtoDeserializerTest {
         WeatherApiDto expected = weatherApiDto();
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
-        when(mapperMock.readValue(completeNodeString, WeatherApiDto.class)).thenReturn(expected);
+        when(mapperMock.readValue(COMPLETE_NODE_STRING, WeatherApiDto.class)).thenReturn(expected);
 
-        WeatherApiDto result = victim.deserializeApiResponse(completeNodeString);
+        WeatherApiDto result = victim.deserializeApiResponse(COMPLETE_NODE_STRING);
 
         assertEquals(expected, result);
         assertThat(output.getOut())
-                .contains(String.format(DESERIALIZER_DESERIALIZED_MESSAGE, completeNodeString, result));
+                .contains(String.format(DESERIALIZER_DESERIALIZED_MESSAGE, COMPLETE_NODE_STRING, result));
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
-        verify(mapperMock, times(1)).readValue(completeNodeString, WeatherApiDto.class);
+        verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);
         verifyNoInteractions(deserializer);
     }
@@ -62,15 +62,15 @@ class WeatherYrDtoDeserializerTest {
     void deserializeApiResponse_whenMapperThrowJsonProcessingException_thenThrowWeatherApiDtoDeserializerException(CapturedOutput output) throws JsonProcessingException {
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
-        when(mapperMock.readValue(completeNodeString, WeatherApiDto.class))
+        when(mapperMock.readValue(COMPLETE_NODE_STRING, WeatherApiDto.class))
                 .thenThrow(new JsonMappingException("message"));
 
-        assertThatThrownBy(() -> victim.deserializeApiResponse(completeNodeString))
+        assertThatThrownBy(() -> victim.deserializeApiResponse(COMPLETE_NODE_STRING))
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
                 .hasMessage(String.format(DESERIALIZER_FAIL_MESSAGE, "message"));
 
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
-        verify(mapperMock, times(1)).readValue(completeNodeString, WeatherApiDto.class);
+        verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);
         verifyNoInteractions(deserializer);
     }
@@ -79,14 +79,14 @@ class WeatherYrDtoDeserializerTest {
     void deserializeApiResponse_whenMapperReturnNull_thenThrowWeatherApiDtoDeserializerException(CapturedOutput output) throws JsonProcessingException {
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
-        when(mapperMock.readValue(completeNodeString, WeatherApiDto.class)).thenReturn(null);
+        when(mapperMock.readValue(COMPLETE_NODE_STRING, WeatherApiDto.class)).thenReturn(null);
 
-        assertThatThrownBy(() -> victim.deserializeApiResponse(completeNodeString))
+        assertThatThrownBy(() -> victim.deserializeApiResponse(COMPLETE_NODE_STRING))
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
                 .hasMessage(DESERIALIZER_NULL_MESSAGE);
 
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
-        verify(mapperMock, times(1)).readValue(completeNodeString, WeatherApiDto.class);
+        verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);
         verifyNoInteractions(deserializer);
     }

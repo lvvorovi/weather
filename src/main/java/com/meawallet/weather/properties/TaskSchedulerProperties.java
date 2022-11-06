@@ -1,4 +1,4 @@
-package com.meawallet.weather.business.properties;
+package com.meawallet.weather.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -7,14 +7,15 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 
-@ConfigurationProperties(prefix = "api")
-@Data
 @Component
 @Validated
-public class ApiProperties {
+@Data
+@ConfigurationProperties(prefix = "task-scheduler")
+public class TaskSchedulerProperties {
 
     @NotNull
-    private String url;
+    private int poolSize;
     @NotNull
-    private Long timeDifference;
+    private String threadNamePrefix;
+
 }

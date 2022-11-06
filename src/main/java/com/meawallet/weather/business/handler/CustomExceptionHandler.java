@@ -12,6 +12,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Arrays;
+
 import static com.meawallet.weather.business.ConstantsStore.API_CALL_FAILED;
 import static com.meawallet.weather.business.ConstantsStore.VALIDATION_FAILED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -48,18 +50,6 @@ public class CustomExceptionHandler {
                 .body(errorDto);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorDto> handleValidationException(ValidationException ex, HttpServletRequest request) {
-        ErrorDto errorDto = new ErrorDto(BAD_REQUEST, ex.getMessage(), request);
-
-        log.warn(VALIDATION_FAILED + errorDto);
-
-        return ResponseEntity
-                .status(BAD_REQUEST)
-                .contentType(APPLICATION_JSON)
-                .body(errorDto);
-    }
-
     @ExceptionHandler(CustomInternalServerErrorException.class)
     public ResponseEntity<ErrorDto> handleWeatherApiServiceException(CustomInternalServerErrorException ex,
                                                                      HttpServletRequest request) {
@@ -73,12 +63,11 @@ public class CustomExceptionHandler {
                 .body(errorDto);
     }
 
-    @ExceptionHandler(Error.class)
-    public ResponseEntity<ErrorDto> handleError(Error ex, HttpServletRequest request) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorDto> handleError(RuntimeException ex, HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(INTERNAL_SERVER_ERROR, ex.getMessage(), request);
 
-        log.error(VALIDATION_FAILED + errorDto);
-        ex.printStackTrace();
+        log.error(VALIDATION_FAILED + errorDto + "\n" + Arrays.toString(ex.getStackTrace()));
 
         return ResponseEntity
                 .internalServerError()

@@ -29,9 +29,7 @@ public class ConstantsStore {
     public static final String API_CALL_EXCEPTION_MESSAGE = "Exception caught while contacting external api: ";
     public static final String WEATHER_API_NO_RESPONSE_BODY_MESSAGE = "Weather API returned no body. Status code: ";
     public static final String WEATHER_API_NOT_VALID_REQUEST_MESSAGE = "Invalid request. Details: ";
-    public static final String WEATHER_ENTITY_NOT_FOUND_MESSAGE = "WeatherEntity was not found for parameters: " +
-            "lat=%f, " +
-            "lon=%f, altitude=%o";
+    public static final String WEATHER_ENTITY_NOT_FOUND_MESSAGE = "WeatherEntity was not found for parameters: ";
 
 
     //Weather API Service logs
@@ -39,7 +37,7 @@ public class ConstantsStore {
     public static final String WEATHER_API_RESPONSE_LOG = "Weather API response: ";
 
     //Weather Service Facade logs
-    public static final String WEATHER_FIND_REQUEST = "Request with parameters: lat=%f, lon=%f, altitude=%o";
+    public static final String WEATHER_FIND_REQUEST = "Request with parameters: lat={}, lon={}, altitude={}";
 
 
     //Weather API Deserializer logs
@@ -58,7 +56,7 @@ public class ConstantsStore {
     //Weather Service logs
     public static final String WEATHER_ENTITY_SAVED_LOG = "WeatherEntity saved with Id: %s";
     public static final String WEATHER_ENTITY_DELETED_LOG = "WeatherEntity deleted from DB: ";
-    public static final String WEATHER_ENTITY_FOUND_LOG = "WeatherEntity found in DB with Id: %s";
+    public static final String WEATHER_ENTITY_FOUND_LOG = "WeatherEntity found in DB with Id: ";
 
 
     //Weather Service Util logs

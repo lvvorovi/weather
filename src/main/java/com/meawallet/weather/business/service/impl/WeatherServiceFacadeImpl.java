@@ -24,7 +24,7 @@ public class WeatherServiceFacadeImpl implements WeatherServiceFacade {
 
     @Override
     public WeatherResponseDto findByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
-        log.info(String.format(WEATHER_FIND_REQUEST, lat, lon, altitude));
+        log.info(WEATHER_FIND_REQUEST, lat, lon, altitude);
 
         lat = util.formatFloatInputData(lat);
         lon = util.formatFloatInputData(lon);

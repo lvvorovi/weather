@@ -7,10 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.meawallet.weather.business.handler.exception.WeatherApiDtoCustomDeserializerException;
 import com.meawallet.weather.business.handler.exception.WeatherApiDtoDeserializerException;
-import com.meawallet.weather.business.properties.ApiProperties;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
 import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ public class CustomStdDeserializer extends StdDeserializer<WeatherApiDto> {
 
 
     @Autowired
-    private transient ApiProperties properties;
+    private transient WeatherProperties properties;
     @Autowired
     private transient WeatherDeserializerUtil util;
 
@@ -81,7 +82,7 @@ public class CustomStdDeserializer extends StdDeserializer<WeatherApiDto> {
             requestDto.setTemperature(temperature);
 
         } catch (IOException e) {
-            throw new WeatherApiDtoDeserializerException(DESERIALIZER_CODEC_READ_FAIL_MESSAGE, e);
+            throw new WeatherApiDtoCustomDeserializerException(DESERIALIZER_CODEC_READ_FAIL_MESSAGE, e);
         }
 
         return requestDto;

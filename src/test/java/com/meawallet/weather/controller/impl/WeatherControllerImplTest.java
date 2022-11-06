@@ -1,4 +1,4 @@
-package com.meawallet.weather.web.controller.impl;
+package com.meawallet.weather.controller.impl;
 
 import com.meawallet.weather.business.service.WeatherServiceFacade;
 import com.meawallet.weather.model.ErrorDto;
@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
-import static com.meawallet.weather.util.WeatherTestUtil.FIND_BY_LAT_AND_LON_AND_ALT_URL;
-import static com.meawallet.weather.util.WeatherTestUtil.FIND_BY_LAT_AND_LON_AND_ALT_URL_MISSING_REQUIRED_PARAM;
-import static com.meawallet.weather.util.WeatherTestUtil.FIND_BY_LAT_AND_LON_AND_ALT_URL_WRONG_TYPE_PARAM;
+import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PARAMS;
+import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS;
+import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
@@ -45,7 +45,7 @@ class WeatherControllerImplTest {
         WeatherResponseDto expected = weatherResponseDto();
         when(service.findByLatAndLonAndAlt(LAT, LON, ALTITUDE)).thenReturn(expected);
 
-        MvcResult mvcResult = mvc.perform(get(FIND_BY_LAT_AND_LON_AND_ALT_URL))
+        MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PARAMS))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -59,7 +59,7 @@ class WeatherControllerImplTest {
     @Test
     void findByLatAndLonAndAlt_whenMissingParams_thenErrorResponse_and400() throws Exception {
 
-        MvcResult mvcResult = mvc.perform(get(FIND_BY_LAT_AND_LON_AND_ALT_URL_MISSING_REQUIRED_PARAM))
+        MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
@@ -74,8 +74,7 @@ class WeatherControllerImplTest {
 
     @Test
     void findByLatAndLonAndAlt_whenInvalidParamType_thenErrorResponse_and400() throws Exception {
-
-        MvcResult mvcResult = mvc.perform(get(FIND_BY_LAT_AND_LON_AND_ALT_URL_WRONG_TYPE_PARAM))
+        MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 

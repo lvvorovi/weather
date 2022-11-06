@@ -1,7 +1,8 @@
-package com.meawallet.weather.business.config;
+package com.meawallet.weather.config;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meawallet.weather.business.properties.ConnectionProperties;
+import com.meawallet.weather.properties.ConnectionProperties;
+import com.meawallet.weather.properties.TaskSchedulerProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
@@ -27,13 +28,14 @@ import static org.apache.http.protocol.HTTP.CONN_KEEP_ALIVE;
 @RequiredArgsConstructor
 public class AppConfig {
 
-    private final ConnectionProperties properties;
+    private final ConnectionProperties connectionProperties;
+    private final TaskSchedulerProperties  taskSchedulerProperties;
 
     @Bean
     public PoolingHttpClientConnectionManager connectionManager() {
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(properties.getMax().getTotal());
-        connectionManager.setDefaultMaxPerRoute(properties.getMax().getRoot());
+        connectionManager.setMaxTotal(connectionProperties.getMaxTotalConnections());
+        connectionManager.setDefaultMaxPerRoute(connectionProperties.getMaxConnectionsPerRouteDefault());
         return connectionManager;
     }
 
@@ -41,9 +43,9 @@ public class AppConfig {
     public RequestConfig requestConfig() {
         return RequestConfig
                 .custom()
-                .setConnectionRequestTimeout(properties.getTimeout().getRequest())
-                .setSocketTimeout(properties.getTimeout().getSocket())
-                .setConnectTimeout(properties.getTimeout().getConnect())
+                .setConnectionRequestTimeout(connectionProperties.getConnectionRequestTimeout())
+                .setSocketTimeout(connectionProperties.getSocketTimeout())
+                .setConnectTimeout(connectionProperties.getConnectTimeout())
                 .build();
     }
 
@@ -74,12 +76,13 @@ public class AppConfig {
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(1);
-        taskScheduler.setThreadNamePrefix("TaskScheduler");
+        taskScheduler.setPoolSize(taskSchedulerProperties.getPoolSize());
+        taskScheduler.setThreadNamePrefix(taskSchedulerProperties.getThreadNamePrefix());
         return taskScheduler;
     }
 
-    private ConnectionKeepAliveStrategy keepAliveStrategy() {
+    @Bean
+    public ConnectionKeepAliveStrategy keepAliveStrategy() {
         return (response, context) -> {
             HeaderElementIterator elementIterator = new BasicHeaderElementIterator
                     (response.headerIterator(CONN_KEEP_ALIVE));
@@ -95,7 +98,7 @@ public class AppConfig {
 
             }
 
-            return properties.getTimeout().getKeepAlive();
+            return connectionProperties.getConnectionKeepAlive();
         };
     }
 

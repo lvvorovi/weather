@@ -1,8 +1,6 @@
 package com.meawallet.weather.business.deserializer.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meawallet.weather.business.deserializer.WeatherApiDtoDeserializer;
 import com.meawallet.weather.business.handler.exception.WeatherApiDtoDeserializerException;

@@ -18,7 +18,8 @@ public class UcLatLonAltTimeStampWeatherApiDtoValidationRule implements WeatherA
     @Override
     public void validate(WeatherApiDto dto) {
         boolean exists = repository
-                .existsByLatAndLonAndAltitudeAndTimeStamp(dto.getLat(), dto.getLon(), dto.getAltitude(), dto.getTimeStamp());
+                .existsByLatAndLonAndAltitudeAndTimeStamp(dto.getLat(), dto.getLon(), dto.getAltitude(),
+                        dto.getTimeStamp());
 
         if (exists) {
             throw new WeatherApiDtoValidationException(

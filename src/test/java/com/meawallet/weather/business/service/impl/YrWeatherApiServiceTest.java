@@ -4,6 +4,7 @@ import com.meawallet.weather.business.deserializer.WeatherApiDtoDeserializer;
 import com.meawallet.weather.business.handler.exception.WeatherApiServiceException;
 import com.meawallet.weather.business.util.YrWeatherApiServiceUtil;
 import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_RESPONSE
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
+import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_API_URL;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_API_URL_WITH_ALL_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_API_URL_WITH_NO_ALT_PARAM;
 import static com.meawallet.weather.util.WeatherTestUtil.getRequiredHeaders;
@@ -49,6 +51,8 @@ class YrWeatherApiServiceTest {
     RestTemplate restTemplate;
     @Mock
     WeatherApiDtoDeserializer deserializer;
+    @Mock
+    WeatherProperties properties;
 
     @InjectMocks
     YrWeatherApiService victim;
@@ -58,7 +62,8 @@ class YrWeatherApiServiceTest {
         WeatherApiDto expected = weatherApiDto();
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
         when(util.buildUrlParams(LAT, LON, ALTITUDE)).thenReturn(getUrlParamsWithAlt());
-        when(util.buildRequestUrl(null, getUrlParamsWithAlt())).thenReturn(WEATHER_API_URL_WITH_ALL_PARAMS);
+        when(properties.getApiUrlCompact()).thenReturn(WEATHER_API_URL);
+        when(util.buildRequestUrl(WEATHER_API_URL, getUrlParamsWithAlt())).thenReturn(WEATHER_API_URL_WITH_ALL_PARAMS);
         when(util.getRequiredHeaders()).thenReturn(getRequiredHeaders());
 
         when(restTemplate.exchange(
@@ -78,7 +83,8 @@ class YrWeatherApiServiceTest {
         assertThat(output.getOut()).contains(WEATHER_API_CALL_LOG + WEATHER_API_URL_WITH_ALL_PARAMS);
         assertThat(output.getOut()).contains(WEATHER_API_RESPONSE_LOG + responseEntity.getBody());
         verify(util, times(1)).buildUrlParams(LAT, LON, ALTITUDE);
-        verify(util, times(1)).buildRequestUrl(null, getUrlParamsWithAlt());
+        verify(properties, times(1)).getApiUrlCompact();
+        verify(util, times(1)).buildRequestUrl(WEATHER_API_URL, getUrlParamsWithAlt());
         verify(util, times(1)).getRequiredHeaders();
 
         verify(restTemplate, times(1)).exchange(
@@ -90,7 +96,7 @@ class YrWeatherApiServiceTest {
         verify(util, times(1)).validateBody(responseEntity);
         verify(util, times(1)).validateResponseStatus(responseEntity);
         verify(deserializer, times(1)).deserializeApiResponse(responseEntity.getBody());
-        verifyNoMoreInteractions(util, deserializer, restTemplate);
+        verifyNoMoreInteractions(util, deserializer, restTemplate, properties);
     }
 
 
@@ -99,7 +105,8 @@ class YrWeatherApiServiceTest {
         WeatherApiDto expected = weatherApiDto();
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
         when(util.buildUrlParams(LAT, LON, null)).thenReturn(getUrlParamsNoALt());
-        when(util.buildRequestUrl(null, getUrlParamsNoALt())).thenReturn(WEATHER_API_URL_WITH_NO_ALT_PARAM);
+        when(properties.getApiUrlCompact()).thenReturn(WEATHER_API_URL);
+        when(util.buildRequestUrl(WEATHER_API_URL, getUrlParamsNoALt())).thenReturn(WEATHER_API_URL_WITH_NO_ALT_PARAM);
         when(util.getRequiredHeaders()).thenReturn(getRequiredHeaders());
 
         when(restTemplate.exchange(
@@ -119,7 +126,8 @@ class YrWeatherApiServiceTest {
         assertThat(output.getOut()).contains(WEATHER_API_CALL_LOG + WEATHER_API_URL_WITH_NO_ALT_PARAM);
         assertThat(output.getOut()).contains(WEATHER_API_RESPONSE_LOG + responseEntity.getBody());
         verify(util, times(1)).buildUrlParams(LAT, LON, null);
-        verify(util, times(1)).buildRequestUrl(null, getUrlParamsNoALt());
+        verify(properties, times(1)).getApiUrlCompact();
+        verify(util, times(1)).buildRequestUrl(WEATHER_API_URL, getUrlParamsNoALt());
         verify(util, times(1)).getRequiredHeaders();
 
         verify(restTemplate, times(1)).exchange(
@@ -131,14 +139,15 @@ class YrWeatherApiServiceTest {
         verify(util, times(1)).validateBody(responseEntity);
         verify(util, times(1)).validateResponseStatus(responseEntity);
         verify(deserializer, times(1)).deserializeApiResponse(responseEntity.getBody());
-        verifyNoMoreInteractions(util, deserializer, restTemplate);
+        verifyNoMoreInteractions(util, deserializer, restTemplate, properties);
     }
 
     @Test
     void getByLatAndLonAndAlt_whenRestTemplateThrowsException_thenThrowWeatherApiServiceException(CapturedOutput output) {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
         when(util.buildUrlParams(LAT, LON, null)).thenReturn(getUrlParamsNoALt());
-        when(util.buildRequestUrl(null, getUrlParamsNoALt())).thenReturn(WEATHER_API_URL_WITH_NO_ALT_PARAM);
+        when(properties.getApiUrlCompact()).thenReturn(WEATHER_API_URL);
+        when(util.buildRequestUrl(WEATHER_API_URL, getUrlParamsNoALt())).thenReturn(WEATHER_API_URL_WITH_NO_ALT_PARAM);
         when(util.getRequiredHeaders()).thenReturn(getRequiredHeaders());
 
         when(restTemplate.exchange(
@@ -155,7 +164,8 @@ class YrWeatherApiServiceTest {
         assertThat(output.getOut()).contains(WEATHER_API_CALL_LOG + WEATHER_API_URL_WITH_NO_ALT_PARAM);
         assertThat(output.getOut()).doesNotContain(WEATHER_API_RESPONSE_LOG + responseEntity.getBody());
         verify(util, times(1)).buildUrlParams(LAT, LON, null);
-        verify(util, times(1)).buildRequestUrl(null, getUrlParamsNoALt());
+        verify(properties, times(1)).getApiUrlCompact();
+        verify(util, times(1)).buildRequestUrl(WEATHER_API_URL, getUrlParamsNoALt());
         verify(util, times(1)).getRequiredHeaders();
 
         verify(restTemplate, times(1)).exchange(
@@ -164,7 +174,7 @@ class YrWeatherApiServiceTest {
                 new HttpEntity<>(null, getRequiredHeaders()),
                 String.class);
 
-        verifyNoMoreInteractions(util, deserializer, restTemplate);
+        verifyNoMoreInteractions(util, deserializer, restTemplate, properties);
     }
 
 }

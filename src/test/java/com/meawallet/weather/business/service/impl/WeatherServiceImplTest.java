@@ -7,6 +7,7 @@ import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -53,6 +56,8 @@ class WeatherServiceImplTest {
     WeatherMapper mapper;
     @Mock
     WeatherValidationService validationService;
+    @Mock
+    WeatherProperties properties;
 
     @InjectMocks
     WeatherServiceImpl victim;
@@ -61,7 +66,8 @@ class WeatherServiceImplTest {
     void findByLatAndLonAndAlt_whenFoundInDb_thenReturnResponse(CapturedOutput output) {
         WeatherEntity entity = weatherEntity();
         WeatherResponseDto expected = weatherResponseDto();
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, LocalDateTime.now().truncatedTo(HOURS)))
+        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE,
+                LocalDateTime.now().truncatedTo(HOURS)))
                 .thenReturn(Optional.of(entity));
         when(mapper.entityToDto(entity)).thenReturn(expected);
 
@@ -73,13 +79,13 @@ class WeatherServiceImplTest {
                 .findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, LocalDateTime.now().truncatedTo(HOURS));
         verify(mapper, times(1)).entityToDto(entity);
         verifyNoMoreInteractions(repository, mapper);
-        verifyNoInteractions(validationService);
+        verifyNoInteractions(validationService, properties);
     }
 
     @Test
     void findByLatAndLonAndAlt_whenNotFoundInDb_thenThrowWeatherEntityNotFoundException(CapturedOutput output) {
-        LocalDateTime now =  LocalDateTime.now().truncatedTo(HOURS);
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE,now))
+        LocalDateTime now = LocalDateTime.now().truncatedTo(HOURS);
+        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, now))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE))
@@ -89,7 +95,7 @@ class WeatherServiceImplTest {
         assertThat(output.getOut()).isEmpty();
         verify(repository, times(1)).findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, now);
         verifyNoMoreInteractions(repository);
-        verifyNoInteractions(validationService, mapper);
+        verifyNoInteractions(validationService, mapper, properties);
     }
 
     @Test
@@ -114,28 +120,37 @@ class WeatherServiceImplTest {
         verify(repository, times(1)).save(mockedEntity);
         verify(mapper, times(1)).entityToDto(entity);
         verifyNoMoreInteractions(validationService, repository, mapper);
+        verifyNoInteractions(properties);
     }
 
     @Test
     void deleteOutdated_whenFound_thenDelete(CapturedOutput output) {
         List<WeatherEntity> entityList = List.of(weatherEntity(), weatherEntity());
+        when(properties.getEntityTtlHours()).thenReturn(2);
         when(repository.deleteByTimeStampBefore(any())).thenReturn(entityList);
 
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
 
-        verify(repository, times(1)).deleteByTimeStampBefore(any());
-        entityList.forEach(entity-> assertThat(output.getOut())
+        entityList.forEach(entity -> assertThat(output.getOut())
                 .contains(WEATHER_ENTITY_DELETED_LOG + entity));
+        verify(repository, times(1)).deleteByTimeStampBefore(any());
+        entityList.forEach(entity -> assertThat(output.getOut())
+                .contains(WEATHER_ENTITY_DELETED_LOG + entity));
+        verifyNoMoreInteractions(properties, repository);
+        verifyNoInteractions(validationService, mapper);
     }
 
     @Test
     void deleteOutdated_whenNotFound_thenDoNothing(CapturedOutput output) {
+        when(properties.getEntityTtlHours()).thenReturn(2);
         when(repository.deleteByTimeStampBefore(any())).thenReturn(List.of());
 
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
 
         verify(repository, times(1)).deleteByTimeStampBefore(any());
-       assertThat(output.getOut()).isEmpty();
+        assertThat(output.getOut()).isEmpty();
+        verifyNoMoreInteractions(repository, properties);
+        verifyNoInteractions(validationService, mapper);
     }
 
 

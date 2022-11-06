@@ -8,9 +8,9 @@ import com.meawallet.weather.business.service.WeatherService;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +32,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final WeatherRepository repository;
     private final WeatherMapper mapper;
     private final WeatherValidationService validationService;
-    @Value("${weather.entity.ttl.hours}")
-    private int entityTtl;
+    private final WeatherProperties properties;
 
     @Override
     public WeatherResponseDto findByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
@@ -41,9 +40,9 @@ public class WeatherServiceImpl implements WeatherService {
 
         WeatherEntity entity = repository.findByLatAndLonAndAltitudeAndTimeStamp(lat, lon, altitude, dateTime)
                 .orElseThrow(() -> new WeatherEntityNotFoundException(
-                        String.format(WEATHER_ENTITY_NOT_FOUND_MESSAGE, lat, lon, altitude)));
+                        WEATHER_ENTITY_NOT_FOUND_MESSAGE + lat + " " + lon + " " + altitude));
 
-        log.info(String.format(WEATHER_ENTITY_FOUND_LOG, entity.getId()));
+        log.info(WEATHER_ENTITY_FOUND_LOG + entity.getId());
 
         return mapper.entityToDto(entity);
     }
@@ -59,10 +58,10 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    @Scheduled(cron = "${weather.scheduling.delete.cron}")
+    @Scheduled(cron = "${weather.scheduling-delete-cron}")
     public void deleteOutdated() {
         List<WeatherEntity> deletedEntityList = repository
-                .deleteByTimeStampBefore(LocalDateTime.now().minusHours(entityTtl));
+                .deleteByTimeStampBefore(LocalDateTime.now().minusHours(properties.getEntityTtlHours()));
 
         if (log.isDebugEnabled()) {
             deletedEntityList.forEach(entity -> log.debug(WEATHER_ENTITY_DELETED_LOG + entity));

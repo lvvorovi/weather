@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoDeserializerException;
-import com.meawallet.weather.business.properties.ApiProperties;
+import com.meawallet.weather.business.handler.exception.WeatherApiDtoCustomDeserializerException;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
 import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +19,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_CODEC_READ_FAIL_MESSAGE;
-import static com.meawallet.weather.util.WeatherTestUtil.completeNodeString;
-import static com.meawallet.weather.util.WeatherTestUtil.currentHourNodeString;
+import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
+import static com.meawallet.weather.util.WeatherTestUtil.CURRENT_HOUR_NODE_STRING;
+import static com.meawallet.weather.util.WeatherTestUtil.CURRENT_HOUR_NODE_TEMPERATURE;
+import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_ALTITUDE;
+import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LAT;
+import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LON;
 import static com.meawallet.weather.util.WeatherTestUtil.stringToJsonNode;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,7 +40,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 class CustomStdDeserializerTest {
 
     @Mock
-    ApiProperties properties;
+    WeatherProperties properties;
     @Mock
     WeatherDeserializerUtil util;
     @InjectMocks
@@ -49,8 +53,8 @@ class CustomStdDeserializerTest {
 
     @Test
     void deserialize_whenValidJson_thenDeserialize() throws Exception {
-        JsonNode currentHourNode = stringToJsonNode(currentHourNodeString);
-        JsonNode completeNode = stringToJsonNode(completeNodeString);
+        JsonNode currentHourNode = stringToJsonNode(CURRENT_HOUR_NODE_STRING);
+        JsonNode completeNode = stringToJsonNode(COMPLETE_NODE_STRING);
         JsonParser parserMock = mock(JsonParser.class);
         DeserializationContext contextMock = mock(DeserializationContext.class);
         ObjectCodec codecMock = mock(ObjectCodec.class);
@@ -62,10 +66,10 @@ class CustomStdDeserializerTest {
         WeatherApiDto result = victim.deserialize(parserMock, contextMock);
 
         assertNotNull(result);
-        assertEquals(8, result.getAltitude());
-        assertEquals(56.9481F, result.getLat());
-        assertEquals(24.1083F, result.getLon());
-        assertEquals(10.8F, result.getTemperature());
+        assertEquals(PRECISE_ALTITUDE, result.getAltitude());
+        assertEquals(PRECISE_LAT, result.getLat());
+        assertEquals(PRECISE_LON, result.getLon());
+        assertEquals(CURRENT_HOUR_NODE_TEMPERATURE, result.getTemperature());
         assertEquals(LocalDateTime.now().truncatedTo(HOURS), result.getTimeStamp());
     }
 
@@ -78,7 +82,7 @@ class CustomStdDeserializerTest {
         when(codecMock.readTree(parserMock)).thenThrow(new IOException("message"));
 
         assertThatThrownBy(() -> victim.deserialize(parserMock, contextMock))
-                .isInstanceOf(WeatherApiDtoDeserializerException.class)
+                .isInstanceOf(WeatherApiDtoCustomDeserializerException.class)
                 .hasMessage(DESERIALIZER_CODEC_READ_FAIL_MESSAGE);
     }
 

@@ -2,9 +2,8 @@ package com.meawallet.weather.swagger;
 
 public class SwaggerMessageStore {
 
-    /*
-     * Weather
-     * */
+
+    //Weather
     public static final String WEATHER_CONTROLLER_TAG_NAME = "Weather Data";
     public static final String WEATHER_CONTROLLER_TAG_DESCRIPTION = "Provides GET method " +
             "to receive current hour temperature for specified location";
@@ -25,16 +24,14 @@ public class SwaggerMessageStore {
     public static final String WEATHER_API_PARAM_EXAMPLE_ALTITUDE = "10";
     public static final String WEATHER_API_PARAM_ALLOWED_VALUES_ALTITUDE = "range[-500, 9000]";
 
-    /*
-     * ApiResponse
-     * */
+
+    //ApiResponse
     public static final String STATUS_OK_MESSAGE = "HTTP STATUS OK";
     public static final String STATUS_BAD_REQUEST_MESSAGE = "HTTP STATUS BAD REQUEST";
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "INTERNAL SERVER ERROR";
 
-    /*
-     * Swagger Api Info
-     * */
+
+    //Swagger Api Info
     static final String API_INFO_TITLE = "Weather management systems API";
     static final String API_INFO_DESCRIPTION = "MeaWallet Weather Management in new feature project";
     static final String API_INFO_VERSION = "0.1.0.SNAPSHOT";

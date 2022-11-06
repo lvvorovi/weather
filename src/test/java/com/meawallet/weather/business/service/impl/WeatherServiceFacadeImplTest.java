@@ -14,12 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_SAVED_LOG;
 import static com.meawallet.weather.business.ConstantsStore.WEATHER_FIND_REQUEST;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
-import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,7 +56,7 @@ class WeatherServiceFacadeImplTest {
         verify(util, times(1)).formatFloatInputData(LAT);
         verify(util, times(1)).formatFloatInputData(LON);
         verify(util, times(1)).formatIntegerInputData(ALTITUDE);
-        verify(service, times(1)).findByLatAndLonAndAlt(LAT,LON, ALTITUDE);
+        verify(service, times(1)).findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
         verifyNoMoreInteractions(util, service);
         verifyNoInteractions(apiService);
     }
@@ -80,19 +78,17 @@ class WeatherServiceFacadeImplTest {
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, null);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(String.format(WEATHER_FIND_REQUEST, LAT, LON, null));
+        assertThat(output.getOut()).contains("Request with parameters: lat=" + LAT + ", lon=" + LON + ", altitude=null");
         assertThat(output.getOut()).contains("message");
         verify(util, times(1)).formatFloatInputData(LAT);
         verify(util, times(1)).formatFloatInputData(LON);
         verify(util, times(1)).formatIntegerInputData(null);
-        verify(service, times(1)).findByLatAndLonAndAlt(LAT,LON, null);
+        verify(service, times(1)).findByLatAndLonAndAlt(LAT, LON, null);
         verify(apiService, times(1)).getByLatAndLonAndAlt(LAT, LON, null);
         verify(apiDtoMock, times(1)).setAltitude(null);
         verify(service, times(1)).save(apiDtoMock);
         verifyNoMoreInteractions(util, service, apiService, apiDtoMock);
     }
-
-
 
 
 }

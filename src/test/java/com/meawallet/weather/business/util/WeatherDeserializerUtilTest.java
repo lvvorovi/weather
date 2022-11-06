@@ -5,21 +5,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meawallet.weather.business.deserializer.impl.CustomStdDeserializer;
 import com.meawallet.weather.model.WeatherApiDto;
-import com.meawallet.weather.util.WeatherTestUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
-import static com.meawallet.weather.util.WeatherTestUtil.arrayNodeString;
+import static com.meawallet.weather.util.WeatherTestUtil.ARRAY_NODE_STRING;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,7 +38,7 @@ class WeatherDeserializerUtilTest {
     @Test
     void getCurrentNode_whenFound_thenReturnedCurrentHourNode() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode arrayNode = mapper.readTree(arrayNodeString);
+        JsonNode arrayNode = mapper.readTree(ARRAY_NODE_STRING);
         String arrayIndexZero = arrayNode.get(0).get("time").toString();
         String expected = arrayNode.get(1).get("time").toString();
 
@@ -64,7 +60,7 @@ class WeatherDeserializerUtilTest {
     @Test
     void getCurrentNode_whenNotFound_thenReturnIndexZero() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode arrayNode = mapper.readTree(arrayNodeString);
+        JsonNode arrayNode = mapper.readTree(ARRAY_NODE_STRING);
         String expected = arrayNode.get(0).get("time").toString();
         String arrayIndexOne = arrayNode.get(1).get("time").toString();
         ObjectMapper mockedMapper = mock(ObjectMapper.class);

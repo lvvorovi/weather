@@ -1,6 +1,7 @@
 package com.meawallet.weather.business.repository;
 
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;

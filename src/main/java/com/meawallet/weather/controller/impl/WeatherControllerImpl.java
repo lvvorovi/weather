@@ -1,8 +1,8 @@
-package com.meawallet.weather.web.controller.impl;
+package com.meawallet.weather.controller.impl;
 
 import com.meawallet.weather.business.service.WeatherServiceFacade;
+import com.meawallet.weather.controller.WeatherController;
 import com.meawallet.weather.model.WeatherResponseDto;
-import com.meawallet.weather.web.controller.WeatherController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
