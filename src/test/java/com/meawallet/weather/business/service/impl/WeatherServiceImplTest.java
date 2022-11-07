@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.business.handler.exception.WeatherEntityNotFoundException;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.mapper.WeatherMapper;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
@@ -15,16 +15,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_DELETED_LOG;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_FOUND_LOG;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_NOT_FOUND_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_SAVED_LOG;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityDeletedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityNotFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntitySavedMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
@@ -37,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -74,7 +72,7 @@ class WeatherServiceImplTest {
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(String.format(WEATHER_ENTITY_FOUND_LOG, entity.getId()));
+        assertThat(output.getOut()).contains(buildEntityFoundMessage(entity.getId()));
         verify(repository, times(1))
                 .findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, LocalDateTime.now().truncatedTo(HOURS));
         verify(mapper, times(1)).entityToDto(entity);
@@ -90,7 +88,7 @@ class WeatherServiceImplTest {
 
         assertThatThrownBy(() -> victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE))
                 .isInstanceOf(WeatherEntityNotFoundException.class)
-                .hasMessage(String.format(WEATHER_ENTITY_NOT_FOUND_MESSAGE, LAT, LON, ALTITUDE));
+                .hasMessage(buildEntityNotFoundMessage(LAT, LON, ALTITUDE, now));
 
         assertThat(output.getOut()).isEmpty();
         verify(repository, times(1)).findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, now);
@@ -113,7 +111,7 @@ class WeatherServiceImplTest {
         WeatherResponseDto result = victim.save(requestDto);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(String.format(WEATHER_ENTITY_SAVED_LOG, entity.getId()));
+        assertThat(output.getOut()).contains(buildEntitySavedMessage(entity.getId()));
         verify(validationService, times(1)).validate(requestDto);
         verify(mapper, times(1)).dtoToEntity(requestDto);
         verify(mockedEntity, times(1)).setId(anyString());
@@ -132,10 +130,10 @@ class WeatherServiceImplTest {
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
 
         entityList.forEach(entity -> assertThat(output.getOut())
-                .contains(WEATHER_ENTITY_DELETED_LOG + entity));
+                .contains(buildEntityDeletedMessage(entity.getId())));
         verify(repository, times(1)).deleteByTimeStampBefore(any());
         entityList.forEach(entity -> assertThat(output.getOut())
-                .contains(WEATHER_ENTITY_DELETED_LOG + entity));
+                .contains(buildEntityDeletedMessage(entity.getId())));
         verifyNoMoreInteractions(properties, repository);
         verifyNoInteractions(validationService, mapper);
     }

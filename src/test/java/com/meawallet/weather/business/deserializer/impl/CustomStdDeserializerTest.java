@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoCustomDeserializerException;
+import com.meawallet.weather.handler.exception.WeatherApiDtoCustomDeserializerException;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.properties.WeatherProperties;
@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_CODEC_READ_FAIL_MESSAGE;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.DESERIALIZER_CODEC_READ_FAIL_MESSAGE;
 import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
 import static com.meawallet.weather.util.WeatherTestUtil.CURRENT_HOUR_NODE_STRING;
 import static com.meawallet.weather.util.WeatherTestUtil.CURRENT_HOUR_NODE_TEMPERATURE;
@@ -69,7 +69,7 @@ class CustomStdDeserializerTest {
         assertEquals(PRECISE_ALTITUDE, result.getAltitude());
         assertEquals(PRECISE_LAT, result.getLat());
         assertEquals(PRECISE_LON, result.getLon());
-        assertEquals(CURRENT_HOUR_NODE_TEMPERATURE, result.getTemperature());
+        assertEquals(CURRENT_HOUR_NODE_TEMPERATURE, result.getTemperature().toString());
         assertEquals(LocalDateTime.now().truncatedTo(HOURS), result.getTimeStamp());
     }
 

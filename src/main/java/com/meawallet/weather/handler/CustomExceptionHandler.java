@@ -1,22 +1,25 @@
-package com.meawallet.weather.business.handler;
+package com.meawallet.weather.handler;
 
-import com.meawallet.weather.business.handler.exception.CustomInternalServerErrorException;
-import com.meawallet.weather.business.handler.exception.ValidationException;
+import com.meawallet.weather.handler.exception.CustomInternalServerErrorException;
 import com.meawallet.weather.model.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
-
+import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 
-import static com.meawallet.weather.business.ConstantsStore.API_CALL_FAILED;
-import static com.meawallet.weather.business.ConstantsStore.VALIDATION_FAILED;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildAccessDeniedFailedMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildApiCallFailedMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildValidationFailedMessage;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -24,12 +27,25 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class CustomExceptionHandler {
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDto> handleConstraintViolationException(ConstraintViolationException ex,
+                                                                       HttpServletRequest request) {
+        ErrorDto errorDto = new ErrorDto(BAD_REQUEST, ex.getMessage(), request);
+
+        log.warn(buildValidationFailedMessage(errorDto));
+
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .contentType(APPLICATION_JSON)
+                .body(errorDto);
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
                                                                               HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(BAD_REQUEST, ex.getMessage(), request);
 
-        log.warn(VALIDATION_FAILED + errorDto);
+        log.warn(buildValidationFailedMessage(errorDto));
 
         return ResponseEntity
                 .status(BAD_REQUEST)
@@ -42,7 +58,7 @@ public class CustomExceptionHandler {
                                                                                   HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(BAD_REQUEST, ex.getMessage(), request);
 
-        log.warn(VALIDATION_FAILED + errorDto);
+        log.warn(buildValidationFailedMessage(errorDto));
 
         return ResponseEntity
                 .status(BAD_REQUEST)
@@ -55,7 +71,7 @@ public class CustomExceptionHandler {
                                                                      HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(INTERNAL_SERVER_ERROR, ex.getMessage(), request);
 
-        log.warn(API_CALL_FAILED + errorDto);
+        log.warn(buildApiCallFailedMessage(errorDto));
 
         return ResponseEntity
                 .internalServerError()
@@ -63,11 +79,24 @@ public class CustomExceptionHandler {
                 .body(errorDto);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorDto> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        ErrorDto errorDto = new ErrorDto(FORBIDDEN, ex.getMessage(), request);
+
+        log.error(buildAccessDeniedFailedMessage(errorDto));
+
+        return ResponseEntity
+                .status(FORBIDDEN.value())
+                .contentType(APPLICATION_JSON)
+                .body(errorDto);
+    }
+
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> handleError(RuntimeException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorDto> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(INTERNAL_SERVER_ERROR, ex.getMessage(), request);
 
-        log.error(VALIDATION_FAILED + errorDto + "\n" + Arrays.toString(ex.getStackTrace()));
+        log.error(buildInternalServerErrorMessage(errorDto)
+                + "\n" + Arrays.toString(ex.getStackTrace()));
 
         return ResponseEntity
                 .internalServerError()

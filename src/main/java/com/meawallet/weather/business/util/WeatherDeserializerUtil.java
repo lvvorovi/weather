@@ -1,7 +1,6 @@
 package com.meawallet.weather.business.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,9 +9,10 @@ import com.meawallet.weather.model.WeatherApiDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
-import static com.meawallet.weather.business.ConstantsStore.TIME;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.TIME;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Component
 public class WeatherDeserializerUtil {
@@ -20,7 +20,7 @@ public class WeatherDeserializerUtil {
     public ObjectMapper getWeatherObjectMapper(JsonDeserializer<? extends WeatherApiDto> deserializer) {
         ObjectMapper mapper = new ObjectMapper();
 
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         SimpleModule module = new SimpleModule(deserializer.getClass().toString());
         module.addDeserializer(WeatherApiDto.class, deserializer);
@@ -32,7 +32,7 @@ public class WeatherDeserializerUtil {
     public JsonNode getCurrentNode(JsonNode jsonNode, ObjectMapper mapper, Long hourDifference) throws JsonProcessingException {
         for (JsonNode jn : jsonNode) {
             LocalDateTime dateTime = mapper.readValue(jn.get(TIME).toString(), LocalDateTime.class);
-            if (dateTime.equals(LocalDateTime.now().minusHours(hourDifference).truncatedTo(ChronoUnit.HOURS))) {
+            if (dateTime.equals(LocalDateTime.now().minusHours(hourDifference).truncatedTo(HOURS))) {
                 return jn;
             }
         }

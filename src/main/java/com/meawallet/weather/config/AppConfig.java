@@ -29,7 +29,7 @@ import static org.apache.http.protocol.HTTP.CONN_KEEP_ALIVE;
 public class AppConfig {
 
     private final ConnectionProperties connectionProperties;
-    private final TaskSchedulerProperties  taskSchedulerProperties;
+    private final TaskSchedulerProperties taskSchedulerProperties;
 
     @Bean
     public PoolingHttpClientConnectionManager connectionManager() {

@@ -1,4 +1,4 @@
-package com.meawallet.weather.business.handler.exception;
+package com.meawallet.weather.handler.exception;
 
 public class WeatherApiDtoDeserializerException extends CustomInternalServerErrorException {
 

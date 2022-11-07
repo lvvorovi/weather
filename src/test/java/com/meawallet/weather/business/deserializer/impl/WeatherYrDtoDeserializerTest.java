@@ -1,11 +1,11 @@
 package com.meawallet.weather.business.deserializer.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoDeserializerException;
+import com.meawallet.weather.handler.exception.WeatherApiDtoDeserializerException;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
 import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.util.TestJsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,9 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_DESERIALIZED_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_FAIL_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_NULL_MESSAGE;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildDeserializerFailMessage;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildDeserializerNullResponseMessage;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildYrDeserializerEndMessage;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildYrDeserializerStartMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,8 +51,8 @@ class WeatherYrDtoDeserializerTest {
         WeatherApiDto result = victim.deserializeApiResponse(COMPLETE_NODE_STRING);
 
         assertEquals(expected, result);
-        assertThat(output.getOut())
-                .contains(String.format(DESERIALIZER_DESERIALIZED_MESSAGE, COMPLETE_NODE_STRING, result));
+        assertThat(output.getOut()).contains(buildYrDeserializerStartMessage(COMPLETE_NODE_STRING));
+        assertThat(output.getOut()).contains(buildYrDeserializerEndMessage(result.toString()));
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
         verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);
@@ -63,11 +64,13 @@ class WeatherYrDtoDeserializerTest {
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
         when(mapperMock.readValue(COMPLETE_NODE_STRING, WeatherApiDto.class))
-                .thenThrow(new JsonMappingException("message"));
+                .thenThrow(new TestJsonProcessingException("message"));
 
         assertThatThrownBy(() -> victim.deserializeApiResponse(COMPLETE_NODE_STRING))
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
-                .hasMessage(String.format(DESERIALIZER_FAIL_MESSAGE, "message"));
+                .hasMessage(buildDeserializerFailMessage("message"));
+
+        //TODO output assertion
 
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
         verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
@@ -83,7 +86,9 @@ class WeatherYrDtoDeserializerTest {
 
         assertThatThrownBy(() -> victim.deserializeApiResponse(COMPLETE_NODE_STRING))
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
-                .hasMessage(DESERIALIZER_NULL_MESSAGE);
+                .hasMessage(buildDeserializerNullResponseMessage(COMPLETE_NODE_STRING));
+
+        //TODO output assertion
 
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
         verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);

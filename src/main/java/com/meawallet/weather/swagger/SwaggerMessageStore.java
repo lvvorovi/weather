@@ -2,7 +2,6 @@ package com.meawallet.weather.swagger;
 
 public class SwaggerMessageStore {
 
-
     //Weather
     public static final String WEATHER_CONTROLLER_TAG_NAME = "Weather Data";
     public static final String WEATHER_CONTROLLER_TAG_DESCRIPTION = "Provides GET method " +
@@ -11,23 +10,26 @@ public class SwaggerMessageStore {
     public static final String WEATHER_OPERATION_NOTES = "Weather temperature for specified place";
     public static final String WEATHER_API_PARAM_VALUE_LAT = "Latitude in decimal degrees, mandatory. " +
             "Will be rounded to 4 decimals if supplied more.";
-    public static final String WEATHER_API_PARAM_EXAMPLE_LAT = "56.948112";
+    public static final String WEATHER_API_PARAM_EXAMPLE_LAT = "56.9481";
     public static final String WEATHER_API_PARAM_VALUE_LON = "Longitude in decimal degrees, mandatory. " +
             "Will be rounded to 4 decimals if supplied more.";
-    public static final String WEATHER_API_PARAM_EXAMPLE_LON = "24.108332";
+    public static final String WEATHER_API_PARAM_EXAMPLE_LON = "24.1083";
     public static final String WEATHER_API_PARAM_VALUE_ALTITUDE =
             "Height above (or sometimes below) sea level in whole meters (integers). " +
                     "Optional but recommended for precise temperature values. " +
                     "When missing the internal topography model is used, " +
-                    "which is rather course and may be incorrect in hilly terrain." +
-                    "If provided out of range will be adjusted.";
+                    "which is rather course and may be incorrect in hilly terrain.";
     public static final String WEATHER_API_PARAM_EXAMPLE_ALTITUDE = "10";
     public static final String WEATHER_API_PARAM_ALLOWED_VALUES_ALTITUDE = "range[-500, 9000]";
+    public static final String WEATHER_API_PARAM_ALLOWED_VALUES_LAT = "range[-90, 90]";
+    public static final String WEATHER_API_PARAM_ALLOWED_VALUES_LON = "range[-180, 180]";
 
 
     //ApiResponse
     public static final String STATUS_OK_MESSAGE = "HTTP STATUS OK";
     public static final String STATUS_BAD_REQUEST_MESSAGE = "HTTP STATUS BAD REQUEST";
+    public static final String STATUS_UNAUTHORIZED_MESSAGE = "HTTP STATUS UNAUTHORIZED";
+    public static final String STATUS_FORBIDDEN_MESSAGE = "HTTP STATUS FORBIDDEN";
     public static final String INTERNAL_SERVER_ERROR_MESSAGE = "INTERNAL SERVER ERROR";
 
 

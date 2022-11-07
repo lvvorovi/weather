@@ -1,45 +1,46 @@
 package com.meawallet.weather.business.util;
 
+import com.meawallet.weather.properties.WeatherProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 
-import static com.meawallet.weather.business.ConstantsStore.FLOAT_VALUE_WAS_ADJUSTED_LOG;
-import static com.meawallet.weather.business.ConstantsStore.INTEGER_VALUE_WAS_ADJUSTED_LOG;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_CONTROLLER_ALTITUDE_MAX_VALUE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_CONTROLLER_ALTITUDE_MIN_VALUE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_CONTROLLER_LAT_AND_LON_MAX_DECIMAL_NUMBER;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLatValueWasAdjustedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLonValueWasAdjustedMessage;
+
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class WeatherServiceUtil {
 
-    public Float formatFloatInputData(Float value) {
-        DecimalFormat formatter = new DecimalFormat();
-        formatter.setMaximumFractionDigits(WEATHER_CONTROLLER_LAT_AND_LON_MAX_DECIMAL_NUMBER);
-        Float formattedValue = Float.parseFloat(formatter.format(value));
+    private final WeatherProperties properties;
 
-        if (log.isDebugEnabled() && !value.equals(formattedValue)) {
-            log.debug(FLOAT_VALUE_WAS_ADJUSTED_LOG, value, formattedValue);
+
+    public Float formatLatValue(Float lat) {
+        DecimalFormat formatter = new DecimalFormat();
+        formatter.setMaximumFractionDigits(properties.getApiLatMaxDecimalValue());
+        float formattedLat = Float.parseFloat(formatter.format(lat));
+
+        if (log.isDebugEnabled() && !lat.equals(formattedLat)) {
+            log.debug(buildLatValueWasAdjustedMessage(lat, formattedLat));
         }
 
-        return formattedValue;
+        return formattedLat;
     }
 
-    public Integer formatIntegerInputData(Integer value) {
-        if (value == null) {
-            return null;
+    public Float formatLonValue(Float lon) {
+        DecimalFormat formatter = new DecimalFormat();
+        formatter.setMaximumFractionDigits(properties.getApiLonMaxDecimalValue());
+        float formattedLon = Float.parseFloat(formatter.format(lon));
+
+        if (log.isDebugEnabled() && !lon.equals(formattedLon)) {
+            log.debug(buildLonValueWasAdjustedMessage(lon, formattedLon));
         }
 
-        int formattedValue = Math.min(value, WEATHER_CONTROLLER_ALTITUDE_MAX_VALUE);
-        formattedValue = Math.max(formattedValue, WEATHER_CONTROLLER_ALTITUDE_MIN_VALUE);
-
-        if (log.isDebugEnabled() && !value.equals(formattedValue)) {
-            log.debug(INTEGER_VALUE_WAS_ADJUSTED_LOG, value, formattedValue);
-        }
-
-        return formattedValue;
+        return formattedLon;
     }
 
 }

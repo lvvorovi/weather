@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.business.handler.exception.WeatherEntityNotFoundException;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.mapper.WeatherMapper;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_DELETED_LOG;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_FOUND_LOG;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_NOT_FOUND_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_ENTITY_SAVED_LOG;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityDeletedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityNotFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntitySavedMessage;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
@@ -39,10 +39,10 @@ public class WeatherServiceImpl implements WeatherService {
         LocalDateTime dateTime = LocalDateTime.now().truncatedTo(HOURS);
 
         WeatherEntity entity = repository.findByLatAndLonAndAltitudeAndTimeStamp(lat, lon, altitude, dateTime)
-                .orElseThrow(() -> new WeatherEntityNotFoundException(
-                        WEATHER_ENTITY_NOT_FOUND_MESSAGE + lat + " " + lon + " " + altitude));
+                .orElseThrow(() ->
+                        new WeatherEntityNotFoundException(buildEntityNotFoundMessage(lat, lon, altitude, dateTime)));
 
-        log.info(WEATHER_ENTITY_FOUND_LOG + entity.getId());
+        log.info(buildEntityFoundMessage(entity.getId()));
 
         return mapper.entityToDto(entity);
     }
@@ -53,7 +53,7 @@ public class WeatherServiceImpl implements WeatherService {
         WeatherEntity requestEntity = mapper.dtoToEntity(requestDto);
         requestEntity.setId(UUID.randomUUID().toString());
         WeatherEntity savedEntity = repository.save(requestEntity);
-        log.info(String.format(WEATHER_ENTITY_SAVED_LOG, savedEntity.getId()));
+        log.info(buildEntitySavedMessage(savedEntity.getId()));
         return mapper.entityToDto(savedEntity);
     }
 
@@ -64,7 +64,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .deleteByTimeStampBefore(LocalDateTime.now().minusHours(properties.getEntityTtlHours()));
 
         if (log.isDebugEnabled()) {
-            deletedEntityList.forEach(entity -> log.debug(WEATHER_ENTITY_DELETED_LOG + entity));
+            deletedEntityList.forEach(entity -> log.debug(buildEntityDeletedMessage(entity.getId())));
         }
     }
 }

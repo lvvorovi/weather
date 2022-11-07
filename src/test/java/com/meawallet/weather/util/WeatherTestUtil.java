@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.controller.impl.WeatherControllerImpl;
-import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_HEADER_USER_AGENT_VALUE;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -26,13 +24,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class WeatherTestUtil {
 
-    //Request Parameters
+
     public static final Float LAT = 56.948112F;
     public static final Float LON = 24.108332F;
     public static final Integer ALTITUDE = 90000;
     public static final Float PRECISE_LAT = 56.9481F;
     public static final Float PRECISE_LON = 24.1083F;
     public static final Integer PRECISE_ALTITUDE = 9000;
+    public static final int maxTotalConnections = 50;
+    public static final int maxConnectionsPerRouteDefault = 20;
+    public static final int connectionRequestTimeout = 5000;
+    public static final int socketTimeout = 5000;
+    public static final int connectTimeout = 5000;
+
 
     //Controller Test urls
     public static final String WEATHER_CONTROLLER_FIND_URL_WITH_PARAMS =
@@ -57,10 +61,12 @@ public class WeatherTestUtil {
             "&altitude=" + PRECISE_ALTITUDE;
     public static final String WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS =
             WEATHER_API_URL + WEATHER_API_URL_ALL_PRECISE_PARAMS;
+
+
     //Json node
     public static final String CURRENT_HOUR_NODE_TEMPERATURE = "10.8";
     public static final String CURRENT_HOUR_NODE_STRING =
-            "{\"time\":\"" + currentTimeTrancatedToHours().minusHours(2) + "\",\"data" + "\":" + " " +
+            "{\"time\":\"" + currentTimeTruncatedToHours().minusHours(2) + "\",\"data" + "\":" + " " +
                     "{\"instant\":{\"details\": {\"air_pressure_at_sea_level\": 1016.8,\"air_temperature\": " +
                     CURRENT_HOUR_NODE_TEMPERATURE + ",\"cloud_area_fraction\": 99.9,\"relative_humidity\": 94.8," +
                     "\"wind_from_direction\": 228.4,\"wind_speed\": 2.2}},\"next_12_hours\": {\"summary\": " +
@@ -138,7 +144,7 @@ public class WeatherTestUtil {
 
     public static HttpHeaders getRequiredHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(USER_AGENT, WEATHER_API_HEADER_USER_AGENT_VALUE);
+        headers.add(USER_AGENT, "UniqueUserAgent");
         headers.add(ACCEPT, APPLICATION_JSON_VALUE);
         return headers;
     }
@@ -148,7 +154,8 @@ public class WeatherTestUtil {
         mapper.registerModule(new JavaTimeModule());
         return mapper.readTree(string);
     }
-    public static LocalDateTime currentTimeTrancatedToHours() {
+
+    public static LocalDateTime currentTimeTruncatedToHours() {
         return LocalDateTime.now().truncatedTo(HOURS);
     }
 }

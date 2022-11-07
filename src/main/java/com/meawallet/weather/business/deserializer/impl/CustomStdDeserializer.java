@@ -7,8 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoCustomDeserializerException;
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoDeserializerException;
+import com.meawallet.weather.handler.exception.WeatherApiDtoCustomDeserializerException;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.properties.WeatherProperties;
@@ -18,16 +17,16 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static com.meawallet.weather.business.ConstantsStore.AIR_TEMPERATURE;
-import static com.meawallet.weather.business.ConstantsStore.COORDINATES;
-import static com.meawallet.weather.business.ConstantsStore.DATA;
-import static com.meawallet.weather.business.ConstantsStore.DESERIALIZER_CODEC_READ_FAIL_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.DETAILS;
-import static com.meawallet.weather.business.ConstantsStore.GEOMETRY;
-import static com.meawallet.weather.business.ConstantsStore.INSTANT;
-import static com.meawallet.weather.business.ConstantsStore.PROPERTIES;
-import static com.meawallet.weather.business.ConstantsStore.TIME;
-import static com.meawallet.weather.business.ConstantsStore.TIMESERIES;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.AIR_TEMPERATURE;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.COORDINATES;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.DATA;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.DESERIALIZER_CODEC_READ_FAIL_MESSAGE;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.DETAILS;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.GEOMETRY;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.INSTANT;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.PROPERTIES;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.TIME;
+import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.TIMESERIES;
 
 @Component
 public class CustomStdDeserializer extends StdDeserializer<WeatherApiDto> {

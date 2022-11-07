@@ -10,11 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.meawallet.weather.util.TestUtil.connectTimeout;
-import static com.meawallet.weather.util.TestUtil.connectionRequestTimeout;
-import static com.meawallet.weather.util.TestUtil.maxConnectionsPerRouteDefault;
-import static com.meawallet.weather.util.TestUtil.maxTotalConnections;
-import static com.meawallet.weather.util.TestUtil.socketTimeout;
+import static com.meawallet.weather.util.WeatherTestUtil.connectTimeout;
+import static com.meawallet.weather.util.WeatherTestUtil.connectionRequestTimeout;
+import static com.meawallet.weather.util.WeatherTestUtil.maxConnectionsPerRouteDefault;
+import static com.meawallet.weather.util.WeatherTestUtil.maxTotalConnections;
+import static com.meawallet.weather.util.WeatherTestUtil.socketTimeout;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

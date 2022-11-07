@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.util;
 
-import com.meawallet.weather.business.handler.exception.WeatherApiServiceException;
+import com.meawallet.weather.handler.exception.WeatherApiServiceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -9,12 +9,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_HEADER_USER_AGENT_VALUE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NOT_VALID_REQUEST_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NO_RESPONSE_BODY_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_ALT;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_LAT;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_LON;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALT;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -51,9 +50,9 @@ public class YrWeatherApiServiceUtil {
         }
     }
 
-    public HttpHeaders getRequiredHeaders() {
+    public HttpHeaders getRequiredHeaders(String userAgentHeaderValue) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(USER_AGENT, WEATHER_API_HEADER_USER_AGENT_VALUE);
+        headers.add(USER_AGENT, userAgentHeaderValue);
         headers.add(ACCEPT, APPLICATION_JSON_VALUE);
         return headers;
     }
@@ -67,8 +66,7 @@ public class YrWeatherApiServiceUtil {
         }
 
         if (bodyIsNull || bodyIsEmpty) {
-            throw new WeatherApiServiceException(
-                    WEATHER_API_NO_RESPONSE_BODY_MESSAGE + responseEntity.getStatusCode());
+            throw new WeatherApiServiceException(buildApiNoResponseMessage(responseEntity.getStatusCode()));
         }
 
     }
@@ -77,8 +75,7 @@ public class YrWeatherApiServiceUtil {
         boolean isNot200 = !responseEntity.getStatusCode().is2xxSuccessful();
 
         if (isNot200) {
-            throw new WeatherApiServiceException(
-                    WEATHER_API_NOT_VALID_REQUEST_MESSAGE + responseEntity.getBody());
+            throw new WeatherApiServiceException(buildApiInvalidRequestMessage(responseEntity.getBody()));
         }
     }
 }

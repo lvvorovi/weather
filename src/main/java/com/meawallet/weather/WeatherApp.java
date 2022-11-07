@@ -15,11 +15,10 @@ public class WeatherApp {
 
     /*
      * TODO:
-     *  - Spring Security
+     *  - Auth Server
      *  - Make your code deliverable.
      *  - Concurrency?
      *  - Prometheus monitoring?
-     *  - Log Message Builder
      * */
 
 }

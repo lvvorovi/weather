@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.validation.rule.impl;
 
-import com.meawallet.weather.business.handler.exception.WeatherApiDtoValidationException;
+import com.meawallet.weather.handler.exception.WeatherApiDtoValidationException;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.model.WeatherApiDto;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_DTO_EXISTS_MESSAGE;
+import static com.meawallet.weather.message.store.WeatherValidationMessageStore.buildApiDtoExistsMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,7 +38,11 @@ class UcLatLonAltTimeStampWeatherApiDtoValidationRuleTest {
 
         assertThatThrownBy(() -> victim.validate(request))
                 .isInstanceOf(WeatherApiDtoValidationException.class)
-                .hasMessageContaining(WEATHER_API_DTO_EXISTS_MESSAGE);
+                .hasMessageContaining(buildApiDtoExistsMessage(
+                        request.getLat(),
+                        request.getLon(),
+                        request.getAltitude(),
+                        request.getTimeStamp()));
 
         verify(repository, times(1))
                 .existsByLatAndLonAndAltitudeAndTimeStamp(
