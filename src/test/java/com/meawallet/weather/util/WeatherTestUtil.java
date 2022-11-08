@@ -28,6 +28,7 @@ public class WeatherTestUtil {
     public static final Float LAT = 56.948112F;
     public static final Float LON = 24.108332F;
     public static final Integer ALTITUDE = 90000;
+    public static final LocalDateTime NOW = LocalDateTime.now().truncatedTo(HOURS);
     public static final Float PRECISE_LAT = 56.9481F;
     public static final Float PRECISE_LON = 24.1083F;
     public static final Integer PRECISE_ALTITUDE = 9000;
@@ -91,9 +92,7 @@ public class WeatherTestUtil {
     //Variables
 
     public static WeatherResponseDto weatherResponseDto() {
-        WeatherResponseDto dto = new WeatherResponseDto();
-        dto.setTemperature(10.01F);
-        return dto;
+        return new WeatherResponseDto(10.01F);
     }
 
     public static WeatherApiDto weatherApiDto() {
@@ -120,7 +119,7 @@ public class WeatherTestUtil {
     public static WeatherEntity weatherEntityPreciseParams() {
         WeatherEntity entity = new WeatherEntity();
         entity.setId(UUID.randomUUID().toString());
-        entity.setTemperature(10.1F);
+        entity.setTemperature(10.01F);
         entity.setLat(PRECISE_LAT);
         entity.setAltitude(PRECISE_ALTITUDE);
         entity.setLon(PRECISE_LON);

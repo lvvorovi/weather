@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.TIME;
+import static com.meawallet.weather.business.message.store.WeatherDeserializerMessageStore.TIME;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 @Component

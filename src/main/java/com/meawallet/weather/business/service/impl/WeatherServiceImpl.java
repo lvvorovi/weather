@@ -1,11 +1,11 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.mapper.WeatherMapper;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.business.service.WeatherService;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.properties.WeatherProperties;
@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityDeletedMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityFoundMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityNotFoundMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntitySavedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildDeletedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildFoundMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildNotFoundMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildSavedMessage;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
@@ -35,14 +35,14 @@ public class WeatherServiceImpl implements WeatherService {
     private final WeatherProperties properties;
 
     @Override
-    public WeatherResponseDto findByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
-        LocalDateTime dateTime = LocalDateTime.now().truncatedTo(HOURS);
+    public WeatherResponseDto findDtoByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
+        LocalDateTime now = LocalDateTime.now().truncatedTo(HOURS);
 
-        WeatherEntity entity = repository.findByLatAndLonAndAltitudeAndTimeStamp(lat, lon, altitude, dateTime)
+        WeatherEntity entity = repository.findByLatAndLonAndAltitudeAndTimeStamp(lat, lon, altitude, now)
                 .orElseThrow(() ->
-                        new WeatherEntityNotFoundException(buildEntityNotFoundMessage(lat, lon, altitude, dateTime)));
+                        new WeatherEntityNotFoundException(buildNotFoundMessage(lat, lon, altitude, now)));
 
-        log.info(buildEntityFoundMessage(entity.getId()));
+        log.info(buildFoundMessage(lat, lon, altitude, now));
 
         return mapper.entityToDto(entity);
     }
@@ -53,7 +53,7 @@ public class WeatherServiceImpl implements WeatherService {
         WeatherEntity requestEntity = mapper.dtoToEntity(requestDto);
         requestEntity.setId(UUID.randomUUID().toString());
         WeatherEntity savedEntity = repository.save(requestEntity);
-        log.info(buildEntitySavedMessage(savedEntity.getId()));
+        log.info(buildSavedMessage(savedEntity.getId()));
         return mapper.entityToDto(savedEntity);
     }
 
@@ -64,7 +64,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .deleteByTimeStampBefore(LocalDateTime.now().minusHours(properties.getEntityTtlHours()));
 
         if (log.isDebugEnabled()) {
-            deletedEntityList.forEach(entity -> log.debug(buildEntityDeletedMessage(entity.getId())));
+            deletedEntityList.forEach(entity -> log.debug(buildDeletedMessage(entity.getId())));
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.meawallet.weather.message.store;
+package com.meawallet.weather.business.message.store;
 
 import org.springframework.http.HttpStatus;
 

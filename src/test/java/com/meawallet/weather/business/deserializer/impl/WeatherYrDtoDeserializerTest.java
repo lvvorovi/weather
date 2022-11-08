@@ -2,8 +2,8 @@ package com.meawallet.weather.business.deserializer.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.meawallet.weather.handler.exception.WeatherApiDtoDeserializerException;
 import com.meawallet.weather.business.util.WeatherDeserializerUtil;
+import com.meawallet.weather.handler.exception.WeatherApiDtoDeserializerException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.util.TestJsonProcessingException;
 import org.junit.jupiter.api.Test;
@@ -14,10 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildDeserializerFailMessage;
-import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildDeserializerNullResponseMessage;
-import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildYrDeserializerEndMessage;
-import static com.meawallet.weather.message.store.WeatherDeserializerMessageStore.buildYrDeserializerStartMessage;
+import static com.meawallet.weather.business.message.store.WeatherDeserializerMessageStore.buildDeserializerFailMessage;
+import static com.meawallet.weather.business.message.store.WeatherDeserializerMessageStore.buildDeserializerNullResponseMessage;
+import static com.meawallet.weather.business.message.store.WeatherDeserializerMessageStore.buildYrDeserializerEndMessage;
+import static com.meawallet.weather.business.message.store.WeatherDeserializerMessageStore.buildYrDeserializerStartMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThat;

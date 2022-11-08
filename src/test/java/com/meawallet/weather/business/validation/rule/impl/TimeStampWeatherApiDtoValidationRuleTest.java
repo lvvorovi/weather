@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.meawallet.weather.message.store.WeatherValidationMessageStore.WEATHER_API_TIMESTAMP_NULL_MESSAGE;
+import static com.meawallet.weather.business.message.store.WeatherValidationMessageStore.WEATHER_API_TIMESTAMP_NULL_MESSAGE;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

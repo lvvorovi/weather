@@ -13,14 +13,10 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
-import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
-import static com.meawallet.weather.util.WeatherTestUtil.LAT;
-import static com.meawallet.weather.util.WeatherTestUtil.LON;
 import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LON;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
@@ -79,7 +75,7 @@ class WeatherControllerImplTest {
         verifyNoInteractions(service);
     }
 
-    @Test
+    @Test()
     @WithMockUser
     void findByLatAndLonAndAlt_whenInvalidParamType_thenErrorResponse_and400() throws Exception {
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS))

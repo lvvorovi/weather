@@ -1,10 +1,10 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.mapper.WeatherMapper;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.properties.WeatherProperties;
@@ -16,21 +16,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityDeletedMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityFoundMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntityNotFoundMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildEntitySavedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildDeletedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildFoundMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildNotFoundMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildSavedMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
+import static com.meawallet.weather.util.WeatherTestUtil.NOW;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherEntity;
 import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
-import static java.time.temporal.ChronoUnit.HOURS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -64,17 +63,16 @@ class WeatherServiceImplTest {
     void findByLatAndLonAndAlt_whenFoundInDb_thenReturnResponse(CapturedOutput output) {
         WeatherEntity entity = weatherEntity();
         WeatherResponseDto expected = weatherResponseDto();
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE,
-                LocalDateTime.now().truncatedTo(HOURS)))
+        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
                 .thenReturn(Optional.of(entity));
         when(mapper.entityToDto(entity)).thenReturn(expected);
 
-        WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
+        WeatherResponseDto result = victim.findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildEntityFoundMessage(entity.getId()));
+        assertThat(output.getOut()).contains(buildFoundMessage(LAT, LON, ALTITUDE, NOW));
         verify(repository, times(1))
-                .findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, LocalDateTime.now().truncatedTo(HOURS));
+                .findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
         verify(mapper, times(1)).entityToDto(entity);
         verifyNoMoreInteractions(repository, mapper);
         verifyNoInteractions(validationService, properties);
@@ -82,16 +80,15 @@ class WeatherServiceImplTest {
 
     @Test
     void findByLatAndLonAndAlt_whenNotFoundInDb_thenThrowWeatherEntityNotFoundException(CapturedOutput output) {
-        LocalDateTime now = LocalDateTime.now().truncatedTo(HOURS);
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, now))
+        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE))
+        assertThatThrownBy(() -> victim.findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE))
                 .isInstanceOf(WeatherEntityNotFoundException.class)
-                .hasMessage(buildEntityNotFoundMessage(LAT, LON, ALTITUDE, now));
+                .hasMessage(buildNotFoundMessage(LAT, LON, ALTITUDE, NOW));
 
         assertThat(output.getOut()).isEmpty();
-        verify(repository, times(1)).findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, now);
+        verify(repository, times(1)).findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(validationService, mapper, properties);
     }
@@ -111,7 +108,7 @@ class WeatherServiceImplTest {
         WeatherResponseDto result = victim.save(requestDto);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildEntitySavedMessage(entity.getId()));
+        assertThat(output.getOut()).contains(buildSavedMessage(entity.getId()));
         verify(validationService, times(1)).validate(requestDto);
         verify(mapper, times(1)).dtoToEntity(requestDto);
         verify(mockedEntity, times(1)).setId(anyString());
@@ -130,10 +127,10 @@ class WeatherServiceImplTest {
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
 
         entityList.forEach(entity -> assertThat(output.getOut())
-                .contains(buildEntityDeletedMessage(entity.getId())));
+                .contains(buildDeletedMessage(entity.getId())));
         verify(repository, times(1)).deleteByTimeStampBefore(any());
         entityList.forEach(entity -> assertThat(output.getOut())
-                .contains(buildEntityDeletedMessage(entity.getId())));
+                .contains(buildDeletedMessage(entity.getId())));
         verifyNoMoreInteractions(properties, repository);
         verifyNoInteractions(validationService, mapper);
     }

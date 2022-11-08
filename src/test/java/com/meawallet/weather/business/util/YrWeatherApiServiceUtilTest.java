@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;

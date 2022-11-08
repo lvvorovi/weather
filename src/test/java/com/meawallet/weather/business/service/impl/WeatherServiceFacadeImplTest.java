@@ -1,9 +1,9 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.service.WeatherApiService;
 import com.meawallet.weather.business.service.WeatherService;
 import com.meawallet.weather.business.util.WeatherServiceUtil;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
@@ -46,7 +46,7 @@ class WeatherServiceFacadeImplTest {
         WeatherResponseDto expected = weatherResponseDto();
         when(util.formatLatValue(LAT)).thenReturn(LAT);
         when(util.formatLonValue(LON)).thenReturn(LON);
-        when(service.findByLatAndLonAndAlt(LAT, LON, ALTITUDE)).thenReturn(expected);
+        when(service.findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE)).thenReturn(expected);
 
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
@@ -54,7 +54,7 @@ class WeatherServiceFacadeImplTest {
         assertThat(output.getOut()).contains(buildFindRequestMessage(LAT, LON, ALTITUDE));
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
-        verify(service, times(1)).findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
+        verify(service, times(1)).findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE);
         verifyNoMoreInteractions(util, service);
         verifyNoInteractions(apiService);
     }
@@ -65,7 +65,7 @@ class WeatherServiceFacadeImplTest {
         WeatherApiDto apiDtoMock = mock(WeatherApiDto.class);
         when(util.formatLatValue(LAT)).thenReturn(LAT);
         when(util.formatLonValue(LON)).thenReturn(LON);
-        when(service.findByLatAndLonAndAlt(LAT, LON, null))
+        when(service.findDtoByLatAndLonAndAlt(LAT, LON, null))
                 .thenThrow(new WeatherEntityNotFoundException("message"));
         when(apiService.getByLatAndLonAndAlt(LAT, LON, null)).thenReturn(apiDtoMock);
         doNothing().when(apiDtoMock).setAltitude(null);
@@ -78,7 +78,7 @@ class WeatherServiceFacadeImplTest {
         assertThat(output.getOut()).contains("message");
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
-        verify(service, times(1)).findByLatAndLonAndAlt(LAT, LON, null);
+        verify(service, times(1)).findDtoByLatAndLonAndAlt(LAT, LON, null);
         verify(apiService, times(1)).getByLatAndLonAndAlt(LAT, LON, null);
         verify(apiDtoMock, times(1)).setAltitude(null);
         verify(service, times(1)).save(apiDtoMock);

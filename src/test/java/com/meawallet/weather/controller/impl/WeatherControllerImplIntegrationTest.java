@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
 import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
@@ -33,7 +32,6 @@ import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LON;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
 import static com.meawallet.weather.util.WeatherTestUtil.currentTimeTruncatedToHours;
 import static com.meawallet.weather.util.WeatherTestUtil.getRequiredHeaders;
@@ -50,7 +48,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -69,16 +66,16 @@ class WeatherControllerImplIntegrationTest {
 
     @SpyBean
     WeatherRepository repository;
+
     @Autowired
     MockMvc mvc;
 
     @Test
-    @WithMockUser(authorities = "read")
+    @WithMockUser
     void findByLatAndLonAndAlt_whenValidAndNotFormattedParams_andFoundInDb_thenResponse() throws Exception {
         WeatherEntity entity = weatherEntityPreciseParams();
         repository.save(entity);
         WeatherResponseDto expected = weatherResponseDto();
-        expected.setTemperature(entity.getTemperature());
 
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
                 .andExpect(status().isOk())
@@ -92,12 +89,11 @@ class WeatherControllerImplIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "read")
+    @WithMockUser
     void findByLatAndLonAndAlt_whenValidAndFormattedParams_andFoundInDb_thenResponse() throws Exception {
         WeatherEntity entity = weatherEntityPreciseParams();
         repository.save(entity);
         WeatherResponseDto expected = weatherResponseDto();
-        expected.setTemperature(entity.getTemperature());
 
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
                 .andExpect(status().isOk())
@@ -111,7 +107,7 @@ class WeatherControllerImplIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "read")
+    @WithMockUser
     void findByLatAndLonAndAlt_whenValidParams_andNotFoundInDb_thenCallApi_saveToDB_thenResponse() throws Exception {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body(COMPLETE_NODE_STRING);
         when(restTemplate.exchange(
@@ -121,8 +117,7 @@ class WeatherControllerImplIntegrationTest {
                 String.class)
         ).thenReturn(responseEntity);
 
-        WeatherResponseDto expected = weatherResponseDto();
-        expected.setTemperature(Float.parseFloat(CURRENT_HOUR_NODE_TEMPERATURE));
+        WeatherResponseDto expected = new WeatherResponseDto(Float.parseFloat(CURRENT_HOUR_NODE_TEMPERATURE));
 
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
                 .andExpect(status().isOk())
@@ -146,7 +141,7 @@ class WeatherControllerImplIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "read")
+    @WithMockUser
     void findByLatAndLonAndAlt_whenRestTemplateThrowsException_thenReturnErrorResponse() throws Exception {
         when(restTemplate.exchange(
                 WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS,
@@ -196,18 +191,14 @@ class WeatherControllerImplIntegrationTest {
         assertThat(result.getMessage()).contains("TestErrorMessage");
         assertEquals(INTERNAL_SERVER_ERROR.getReasonPhrase(), result.getError());
         assertNotNull(result.getTimeStamp());
+        verifyNoInteractions(restTemplate);
     }
 
     @Test
     void findByLatAndLonAndAlt_whenValidRequest_andNoAuthentication_thenReturn401() throws Exception {
         mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
                 .andExpect(status().is(UNAUTHORIZED.value()));
+        verifyNoInteractions(restTemplate);
     }
 
-    @Test
-    @WithMockUser(authorities = "not-read")
-    void findByLatAndLonAndAlt_whenValidRequest_andWrongAuthorization_thenReturn403() throws Exception {
-        mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
-                .andExpect(status().is(FORBIDDEN.value()));
-    }
 }

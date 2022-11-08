@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLatValueWasAdjustedMessage;
-import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLonValueWasAdjustedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildLatValueWasAdjustedMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildLonValueWasAdjustedMessage;
 
 
 @Component

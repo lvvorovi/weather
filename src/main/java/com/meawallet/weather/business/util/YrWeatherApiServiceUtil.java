@@ -9,11 +9,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALT;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALT;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;

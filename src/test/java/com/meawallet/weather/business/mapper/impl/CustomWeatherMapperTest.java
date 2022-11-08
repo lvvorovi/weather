@@ -25,7 +25,7 @@ class CustomWeatherMapperTest {
 
         WeatherResponseDto result = victim.entityToDto(expected);
 
-        assertEquals(expected.getTemperature(), result.getTemperature());
+        assertEquals(expected.getTemperature(), result.temperature());
     }
 
     @Test

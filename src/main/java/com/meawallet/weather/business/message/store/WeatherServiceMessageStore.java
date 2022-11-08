@@ -1,4 +1,4 @@
-package com.meawallet.weather.message.store;
+package com.meawallet.weather.business.message.store;
 
 import java.time.LocalDateTime;
 
@@ -7,16 +7,17 @@ public class WeatherServiceMessageStore {
     private WeatherServiceMessageStore() {
     }
 
-    public static String buildEntityNotFoundMessage(Float lat, Float lon, Integer altitude, LocalDateTime timeStamp) {
+    public static String buildNotFoundMessage(Float lat, Float lon, Integer altitude, LocalDateTime timeStamp) {
         return "WeatherEntity with parameters 'lat'=" + lat + ", 'lon'=" + lon + ", 'altitude'=" + altitude +
                 ", 'timestamp'=" + timeStamp + " was not found";
     }
 
-    public static String buildEntityFoundMessage(String id) {
-        return "WeatherEntity with id: " + id + " found in DB";
+    public static String buildFoundMessage(Float lat, Float lon, Integer altitude, LocalDateTime timeStamp) {
+        return "WeatherEntity with parameters 'lat'=" + lat + ", 'lon'=" + lon + ", 'altitude'=" + altitude +
+                ", 'timestamp'=" + timeStamp + " found in DB";
     }
 
-    public static String buildEntityDeletedMessage(String id) {
+    public static String buildDeletedMessage(String id) {
         return "WeatherEntity with id: " + id + " deleted from DB";
     }
 
@@ -28,7 +29,7 @@ public class WeatherServiceMessageStore {
         return "Request Lon value was adjusted from: " + from + " to: " + to;
     }
 
-    public static String buildEntitySavedMessage(String id) {
+    public static String buildSavedMessage(String id) {
         return "WeatherEntity saved with Id: " + id;
     }
 }

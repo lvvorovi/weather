@@ -1,17 +1,17 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.business.service.WeatherApiService;
 import com.meawallet.weather.business.service.WeatherService;
 import com.meawallet.weather.business.service.WeatherServiceFacade;
 import com.meawallet.weather.business.util.WeatherServiceUtil;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class WeatherServiceFacadeImpl implements WeatherServiceFacade {
         lon = util.formatLonValue(lon);
 
         try {
-            return service.findByLatAndLonAndAlt(lat, lon, altitude);
+            return service.findDtoByLatAndLonAndAlt(lat, lon, altitude);
         } catch (WeatherEntityNotFoundException ex) {
             log.info(ex.getMessage());
         }

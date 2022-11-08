@@ -11,10 +11,7 @@ public class CustomWeatherMapper implements WeatherMapper {
 
     @Override
     public WeatherResponseDto entityToDto(WeatherEntity entity) {
-        WeatherResponseDto responseDto = new WeatherResponseDto();
-        responseDto.setTemperature(entity.getTemperature());
-
-        return responseDto;
+        return new WeatherResponseDto(entity.getTemperature());
     }
 
     @Override

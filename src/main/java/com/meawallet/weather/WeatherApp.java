@@ -17,7 +17,8 @@ public class WeatherApp {
      * TODO:
      *  - Concurrency in database (deployment of this service in 2 and more copies).
      *  - Prometheus monitoring with some custom metrics related to cache or performance
-     *  - Make your code deliverable. Please use Gradle (or Maven) in order to be able to build artefacts and to launch unit tests
+     *  - Make your code deliverable. Please use Gradle (or Maven) in order to be able to build artefacts and to
+     * launch unit tests
      * */
 
 }
