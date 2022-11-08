@@ -5,7 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface WeatherServiceFacade {
 
-    @PreAuthorize("hasAuthority('read')")
+    @PreAuthorize("isAuthenticated()")
     WeatherResponseDto findByLatAndLonAndAlt(Float lat, Float lon, Integer altitude);
 
 }

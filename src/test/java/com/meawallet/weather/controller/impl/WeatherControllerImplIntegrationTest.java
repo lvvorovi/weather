@@ -205,7 +205,7 @@ class WeatherControllerImplIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "write")
+    @WithMockUser(authorities = "not-read")
     void findByLatAndLonAndAlt_whenValidRequest_andWrongAuthorization_thenReturn403() throws Exception {
         mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
                 .andExpect(status().is(FORBIDDEN.value()));
