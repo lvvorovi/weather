@@ -12,12 +12,4 @@ public class WeatherApp {
                 .sources(WeatherApp.class)
                 .run(args);
     }
-
-    /*
-     * TODO:
-     *  - refactor @Value to class approach
-     *  - refactor test moving all creations to util.
-     *  - refactor test util to hardcode variable, don't take them from static values
-     * */
-
 }

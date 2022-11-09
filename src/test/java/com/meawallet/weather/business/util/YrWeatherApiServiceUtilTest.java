@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.util;
 
-import com.meawallet.weather.business.handler.exception.WeatherApiServiceException;
+import com.meawallet.weather.handler.exception.WeatherApiServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NOT_VALID_REQUEST_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NO_RESPONSE_BODY_MESSAGE;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
@@ -83,7 +83,7 @@ class YrWeatherApiServiceUtilTest {
 
     @Test
     void getRequiredHeaders_whenRequest_thenReceiveRequiredHeaders() {
-        HttpHeaders result = victim.getRequiredHeaders();
+        HttpHeaders result = victim.getRequiredHeaders(USER_AGENT);
 
         assertEquals(2, result.size());
         assertTrue(result.containsKey(USER_AGENT));
@@ -104,7 +104,7 @@ class YrWeatherApiServiceUtilTest {
 
         assertThatThrownBy(() -> victim.validateBody(entity))
                 .isInstanceOf(WeatherApiServiceException.class)
-                .hasMessage(WEATHER_API_NO_RESPONSE_BODY_MESSAGE + entity.getStatusCode());
+                .hasMessage(buildApiNoResponseMessage(entity.getStatusCode()));
     }
 
     @Test
@@ -113,7 +113,7 @@ class YrWeatherApiServiceUtilTest {
 
         assertThatThrownBy(() -> victim.validateBody(entity))
                 .isInstanceOf(WeatherApiServiceException.class)
-                .hasMessage(WEATHER_API_NO_RESPONSE_BODY_MESSAGE + entity.getStatusCode());
+                .hasMessage(buildApiNoResponseMessage(entity.getStatusCode()));
     }
 
     @Test
@@ -129,7 +129,7 @@ class YrWeatherApiServiceUtilTest {
 
         assertThatThrownBy(() -> victim.validateResponseStatus(entity))
                 .isInstanceOf(WeatherApiServiceException.class)
-                .hasMessage(WEATHER_API_NOT_VALID_REQUEST_MESSAGE + entity.getBody());
+                .hasMessage(buildApiInvalidRequestMessage(entity.getBody()));
     }
 
 

@@ -15,7 +15,7 @@ public class WeatherValidationServiceImpl implements WeatherValidationService {
     private final List<WeatherApiDtoValidationRule> apiDtoRuleList;
 
     @Override
-    public void validate(WeatherApiDto createDto) {
-        apiDtoRuleList.forEach(rule -> rule.validate(createDto));
+    public void validate(WeatherApiDto weatherApiDto) {
+        apiDtoRuleList.forEach(rule -> rule.validate(weatherApiDto));
     }
 }

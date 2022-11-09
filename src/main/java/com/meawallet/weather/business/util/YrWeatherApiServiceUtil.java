@@ -1,6 +1,6 @@
 package com.meawallet.weather.business.util;
 
-import com.meawallet.weather.business.handler.exception.WeatherApiServiceException;
+import com.meawallet.weather.handler.exception.WeatherApiServiceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -9,12 +9,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_HEADER_USER_AGENT_VALUE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NOT_VALID_REQUEST_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_NO_RESPONSE_BODY_MESSAGE;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_ALT;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_LAT;
-import static com.meawallet.weather.business.ConstantsStore.WEATHER_API_PARAM_LON;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALTITUDE;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -28,7 +27,7 @@ public class YrWeatherApiServiceUtil {
         params.put(WEATHER_API_PARAM_LON, lon.toString());
 
         if (alt != null) {
-            params.put(WEATHER_API_PARAM_ALT, alt.toString());
+            params.put(WEATHER_API_PARAM_ALTITUDE, alt.toString());
         }
 
         return params;
@@ -41,9 +40,9 @@ public class YrWeatherApiServiceUtil {
                 .encode()
                 .toUriString();
 
-        if (params.containsKey(WEATHER_API_PARAM_ALT)) {
+        if (params.containsKey(WEATHER_API_PARAM_ALTITUDE)) {
             return UriComponentsBuilder.fromHttpUrl(altNullUrl)
-                    .queryParam(WEATHER_API_PARAM_ALT, params.get(WEATHER_API_PARAM_ALT))
+                    .queryParam(WEATHER_API_PARAM_ALTITUDE, params.get(WEATHER_API_PARAM_ALTITUDE))
                     .encode()
                     .toUriString();
         } else {
@@ -51,34 +50,26 @@ public class YrWeatherApiServiceUtil {
         }
     }
 
-    public HttpHeaders getRequiredHeaders() {
+    public HttpHeaders getRequiredHeaders(String userAgentHeaderValue) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(USER_AGENT, WEATHER_API_HEADER_USER_AGENT_VALUE);
+        headers.add(USER_AGENT, userAgentHeaderValue);
         headers.add(ACCEPT, APPLICATION_JSON_VALUE);
         return headers;
     }
 
     public void validateBody(ResponseEntity<String> responseEntity) {
-        boolean bodyIsNull = responseEntity.getBody() == null;
-        boolean bodyIsEmpty = true;
+        String body = responseEntity.getBody();
 
-        if (!bodyIsNull) {
-            bodyIsEmpty = responseEntity.getBody().isEmpty();
+        if (body == null || body.isBlank()) {
+            throw new WeatherApiServiceException(buildApiNoResponseMessage(responseEntity.getStatusCode()));
         }
-
-        if (bodyIsNull || bodyIsEmpty) {
-            throw new WeatherApiServiceException(
-                    WEATHER_API_NO_RESPONSE_BODY_MESSAGE + responseEntity.getStatusCode());
-        }
-
     }
 
     public void validateResponseStatus(ResponseEntity<String> responseEntity) {
         boolean isNot200 = !responseEntity.getStatusCode().is2xxSuccessful();
 
         if (isNot200) {
-            throw new WeatherApiServiceException(
-                    WEATHER_API_NOT_VALID_REQUEST_MESSAGE + responseEntity.getBody());
+            throw new WeatherApiServiceException(buildApiInvalidRequestMessage(responseEntity.getBody()));
         }
     }
 }
