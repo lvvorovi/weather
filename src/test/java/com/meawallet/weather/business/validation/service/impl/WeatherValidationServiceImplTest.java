@@ -5,7 +5,6 @@ import com.meawallet.weather.business.validation.rule.impl.LatitudeWeatherApiDto
 import com.meawallet.weather.business.validation.rule.impl.LongitudeWeatherApiDtoValidationRule;
 import com.meawallet.weather.business.validation.rule.impl.TemperatureWeatherApiDtoValidationRule;
 import com.meawallet.weather.business.validation.rule.impl.TimeStampWeatherApiDtoValidationRule;
-import com.meawallet.weather.business.validation.rule.impl.UcLatLonAltTimeStampWeatherApiDtoValidationRule;
 import com.meawallet.weather.model.WeatherApiDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,8 +33,6 @@ class WeatherValidationServiceImplTest {
     TemperatureWeatherApiDtoValidationRule temperatureRule;
     @Mock
     TimeStampWeatherApiDtoValidationRule timeStampRule;
-    @Mock
-    UcLatLonAltTimeStampWeatherApiDtoValidationRule ucRule;
 
     List<WeatherApiDtoValidationRule> ruleList;
     WeatherValidationServiceImpl victim;
@@ -47,7 +44,6 @@ class WeatherValidationServiceImplTest {
         ruleList.add(longitudeRule);
         ruleList.add(temperatureRule);
         ruleList.add(timeStampRule);
-        ruleList.add(ucRule);
         victim = new WeatherValidationServiceImpl(ruleList);
     }
 

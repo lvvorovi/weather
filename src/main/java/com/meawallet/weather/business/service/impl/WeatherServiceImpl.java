@@ -5,12 +5,14 @@ import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.business.service.WeatherService;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
+import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
 import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.properties.WeatherProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildAlreadyExistsMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildDeletedMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildFoundMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildNotFoundMessage;
@@ -52,7 +55,14 @@ public class WeatherServiceImpl implements WeatherService {
         validationService.validate(requestDto);
         WeatherEntity requestEntity = mapper.dtoToEntity(requestDto);
         requestEntity.setId(UUID.randomUUID().toString());
-        WeatherEntity savedEntity = repository.save(requestEntity);
+        WeatherEntity savedEntity;
+
+        try {
+             savedEntity = repository.save(requestEntity);
+        } catch (DataIntegrityViolationException ex ) {
+            throw new WeatherEntityAlreadyExistsException(buildAlreadyExistsMessage(requestEntity));
+        }
+
         log.info(buildSavedMessage(savedEntity.getId()));
         log.info(savedEntity.toString());
         return mapper.entityToDto(savedEntity);

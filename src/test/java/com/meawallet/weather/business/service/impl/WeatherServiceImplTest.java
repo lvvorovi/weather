@@ -4,6 +4,7 @@ import com.meawallet.weather.business.mapper.WeatherMapper;
 import com.meawallet.weather.business.repository.WeatherRepository;
 import com.meawallet.weather.business.repository.entity.WeatherEntity;
 import com.meawallet.weather.business.validation.service.WeatherValidationService;
+import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
 import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
@@ -15,10 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildAlreadyExistsMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildDeletedMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildFoundMessage;
 import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildNotFoundMessage;
@@ -119,6 +122,29 @@ class WeatherServiceImplTest {
     }
 
     @Test
+    void save_whenValidRequest_andFoundInDb_thenThrowWeatherEntityAlreadyExistsException(CapturedOutput output) {
+        WeatherApiDto requestDto = weatherApiDto();
+        WeatherEntity mockedEntity = mock(WeatherEntity.class);
+        DataIntegrityViolationException exception =
+                new DataIntegrityViolationException("TestDataIntegrityViolationException");
+        doNothing().when(validationService).validate(requestDto);
+        when(mapper.dtoToEntity(requestDto)).thenReturn(mockedEntity);
+        doNothing().when(mockedEntity).setId(anyString());
+        when(repository.save(mockedEntity)).thenThrow(exception);
+
+         assertThatThrownBy(() -> victim.save(requestDto))
+                 .isInstanceOf(WeatherEntityAlreadyExistsException.class)
+                         .hasMessage(buildAlreadyExistsMessage(mockedEntity));
+
+        verify(validationService, times(1)).validate(requestDto);
+        verify(mapper, times(1)).dtoToEntity(requestDto);
+        verify(mockedEntity, times(1)).setId(anyString());
+        verify(repository, times(1)).save(mockedEntity);
+        verifyNoMoreInteractions(validationService, repository, mapper);
+        verifyNoInteractions(properties);
+    }
+
+    @Test
     void deleteOutdated_whenFound_thenDelete(CapturedOutput output) {
         List<WeatherEntity> entityList = List.of(weatherEntity(), weatherEntity());
         when(properties.getEntityTtlHours()).thenReturn(2);
@@ -147,6 +173,5 @@ class WeatherServiceImplTest {
         verifyNoMoreInteractions(repository, properties);
         verifyNoInteractions(validationService, mapper);
     }
-
 
 }

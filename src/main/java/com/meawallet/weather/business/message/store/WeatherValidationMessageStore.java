@@ -13,8 +13,4 @@ public class WeatherValidationMessageStore {
     private WeatherValidationMessageStore() {
     }
 
-    public static String buildApiDtoExistsMessage(Float lat, Float lon, Integer altitude, LocalDateTime timeStamp) {
-        return "Weather Entity already exists in DataBase for WeatherApiDto with parameters: 'lat'=" + lat +
-                ", 'lon'=" + lon + ", 'altitude'=" + altitude + ", 'timeStamp'=" + timeStamp;
-    }
 }
