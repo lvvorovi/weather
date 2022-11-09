@@ -12,12 +12,4 @@ public class WeatherApp {
                 .sources(WeatherApp.class)
                 .run(args);
     }
-
-    /*
-     * TODO:
-     *  - Prometheus monitoring with some custom metrics related to cache or performance
-     *  - Make your code deliverable. Please use Gradle (or Maven) in order to be able to build artefacts and to
-     *      launch unit tests
-     * */
-
 }
