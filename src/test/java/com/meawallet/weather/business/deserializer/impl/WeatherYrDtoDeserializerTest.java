@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+@ExtendWith({MockitoExtension.class})
 class WeatherYrDtoDeserializerTest {
 
     @Mock
@@ -42,6 +42,7 @@ class WeatherYrDtoDeserializerTest {
     WeatherYrDtoDeserializer victim;
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
     void deserializeApiResponse_whenMapperReadValidValue_thenReturnDto(CapturedOutput output) throws JsonProcessingException {
         WeatherApiDto expected = weatherApiDto();
         ObjectMapper mapperMock = mock(ObjectMapper.class);
@@ -60,6 +61,7 @@ class WeatherYrDtoDeserializerTest {
     }
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
     void deserializeApiResponse_whenMapperThrowJsonProcessingException_thenThrowWeatherApiDtoDeserializerException(CapturedOutput output) throws JsonProcessingException {
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
@@ -70,8 +72,7 @@ class WeatherYrDtoDeserializerTest {
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
                 .hasMessage(buildDeserializerFailMessage("message"));
 
-        //TODO output assertion
-
+        assertThat(output.getOut()).contains(buildYrDeserializerStartMessage(COMPLETE_NODE_STRING));
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
         verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);
@@ -79,6 +80,7 @@ class WeatherYrDtoDeserializerTest {
     }
 
     @Test
+    @ExtendWith(OutputCaptureExtension.class)
     void deserializeApiResponse_whenMapperReturnNull_thenThrowWeatherApiDtoDeserializerException(CapturedOutput output) throws JsonProcessingException {
         ObjectMapper mapperMock = mock(ObjectMapper.class);
         when(util.getWeatherObjectMapper(deserializer)).thenReturn(mapperMock);
@@ -88,8 +90,7 @@ class WeatherYrDtoDeserializerTest {
                 .isInstanceOf(WeatherApiDtoDeserializerException.class)
                 .hasMessage(buildDeserializerNullResponseMessage(COMPLETE_NODE_STRING));
 
-        //TODO output assertion
-
+        assertThat(output.getOut()).contains(buildYrDeserializerStartMessage(COMPLETE_NODE_STRING));
         verify(util, times(1)).getWeatherObjectMapper(deserializer);
         verify(mapperMock, times(1)).readValue(COMPLETE_NODE_STRING, WeatherApiDto.class);
         verifyNoMoreInteractions(util, mapperMock);

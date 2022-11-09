@@ -20,12 +20,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
 @ActiveProfiles("test.properties")
-class WeatherServiceUtilTest {
+class RequestParamFormatterTest {
 
     @Mock
     WeatherProperties properties;
     @InjectMocks
-    WeatherServiceUtil victim;
+    RequestParamFormatter victim;
 
     @Test
     void formatLatValue_whenNotFormatted_thenReturnSameValue(CapturedOutput output) {

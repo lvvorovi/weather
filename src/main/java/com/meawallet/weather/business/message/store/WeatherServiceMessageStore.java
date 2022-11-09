@@ -22,11 +22,11 @@ public class WeatherServiceMessageStore {
     }
 
     public static String buildLatValueWasAdjustedMessage(Float from, Float to) {
-        return "Request Lat value was adjusted from: " + from + " to: " + to;
+        return "Request 'lat' value was adjusted from: " + from + " to: " + to;
     }
 
     public static String buildLonValueWasAdjustedMessage(Float from, Float to) {
-        return "Request Lon value was adjusted from: " + from + " to: " + to;
+        return "Request 'lon' value was adjusted from: " + from + " to: " + to;
     }
 
     public static String buildSavedMessage(String id) {

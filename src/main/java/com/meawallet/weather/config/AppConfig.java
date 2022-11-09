@@ -95,11 +95,9 @@ public class AppConfig {
                 if (paramIsTimeout && value != null) {
                     return Long.parseLong(value) * 1000;
                 }
-
             }
 
             return connectionProperties.getConnectionKeepAlive();
         };
     }
-
 }

@@ -14,10 +14,9 @@ import static com.meawallet.weather.business.message.store.WeatherServiceMessage
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class WeatherServiceUtil {
+public class RequestParamFormatter {
 
     private final WeatherProperties properties;
-
 
     public Float formatLatValue(Float lat) {
         DecimalFormat formatter = new DecimalFormat();

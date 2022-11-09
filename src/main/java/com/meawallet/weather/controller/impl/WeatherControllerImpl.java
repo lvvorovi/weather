@@ -15,11 +15,9 @@ public class WeatherControllerImpl implements WeatherController {
 
     private final WeatherServiceFacade service;
 
-
     @Override
     public ResponseEntity<WeatherResponseDto> findByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
         WeatherResponseDto response = service.findByLatAndLonAndAlt(lat, lon, altitude);
         return ResponseEntity.ok().body(response);
     }
-
 }

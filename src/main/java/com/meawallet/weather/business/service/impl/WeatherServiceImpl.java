@@ -54,6 +54,7 @@ public class WeatherServiceImpl implements WeatherService {
         requestEntity.setId(UUID.randomUUID().toString());
         WeatherEntity savedEntity = repository.save(requestEntity);
         log.info(buildSavedMessage(savedEntity.getId()));
+        log.info(savedEntity.toString());
         return mapper.entityToDto(savedEntity);
     }
 

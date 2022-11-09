@@ -9,7 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALT;
+import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALTITUDE;
 import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
 import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
 import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
@@ -27,7 +27,7 @@ public class YrWeatherApiServiceUtil {
         params.put(WEATHER_API_PARAM_LON, lon.toString());
 
         if (alt != null) {
-            params.put(WEATHER_API_PARAM_ALT, alt.toString());
+            params.put(WEATHER_API_PARAM_ALTITUDE, alt.toString());
         }
 
         return params;
@@ -40,9 +40,9 @@ public class YrWeatherApiServiceUtil {
                 .encode()
                 .toUriString();
 
-        if (params.containsKey(WEATHER_API_PARAM_ALT)) {
+        if (params.containsKey(WEATHER_API_PARAM_ALTITUDE)) {
             return UriComponentsBuilder.fromHttpUrl(altNullUrl)
-                    .queryParam(WEATHER_API_PARAM_ALT, params.get(WEATHER_API_PARAM_ALT))
+                    .queryParam(WEATHER_API_PARAM_ALTITUDE, params.get(WEATHER_API_PARAM_ALTITUDE))
                     .encode()
                     .toUriString();
         } else {
@@ -58,17 +58,11 @@ public class YrWeatherApiServiceUtil {
     }
 
     public void validateBody(ResponseEntity<String> responseEntity) {
-        boolean bodyIsNull = responseEntity.getBody() == null;
-        boolean bodyIsEmpty = true;
+        String body = responseEntity.getBody();
 
-        if (!bodyIsNull) {
-            bodyIsEmpty = responseEntity.getBody().isEmpty();
-        }
-
-        if (bodyIsNull || bodyIsEmpty) {
+        if (body == null || body.isBlank()) {
             throw new WeatherApiServiceException(buildApiNoResponseMessage(responseEntity.getStatusCode()));
         }
-
     }
 
     public void validateResponseStatus(ResponseEntity<String> responseEntity) {

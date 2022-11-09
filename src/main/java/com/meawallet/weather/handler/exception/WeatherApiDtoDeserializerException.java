@@ -6,7 +6,4 @@ public class WeatherApiDtoDeserializerException extends CustomInternalServerErro
         super(message);
     }
 
-    public WeatherApiDtoDeserializerException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

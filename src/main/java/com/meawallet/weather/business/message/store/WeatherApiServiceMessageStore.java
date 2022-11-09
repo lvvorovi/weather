@@ -6,7 +6,7 @@ public class WeatherApiServiceMessageStore {
 
     public static final String WEATHER_API_PARAM_LAT = "lat";
     public static final String WEATHER_API_PARAM_LON = "lon";
-    public static final String WEATHER_API_PARAM_ALT = "altitude";
+    public static final String WEATHER_API_PARAM_ALTITUDE = "altitude";
 
     private WeatherApiServiceMessageStore() {
     }

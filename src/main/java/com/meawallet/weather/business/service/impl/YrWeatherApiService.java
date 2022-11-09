@@ -29,15 +29,15 @@ public class YrWeatherApiService implements WeatherApiService {
 
     private final RestTemplate restTemplate;
     private final WeatherApiDtoDeserializer deserializer;
-    private final YrWeatherApiServiceUtil util;
+    private final YrWeatherApiServiceUtil yrApiUtil;
     private final WeatherProperties properties;
 
     @Override
     public WeatherApiDto getByLatAndLonAndAlt(Float lat, Float lon, Integer alt) {
         ResponseEntity<String> responseEntity;
-        Map<String, String> params = util.buildUrlParams(lat, lon, alt);
-        String urlTemplate = util.buildRequestUrl(properties.getApiUrlCompact(), params);
-        HttpHeaders headers = util.getRequiredHeaders(properties.getUserAgentHeaderValue());
+        Map<String, String> params = yrApiUtil.buildUrlParams(lat, lon, alt);
+        String urlTemplate = yrApiUtil.buildRequestUrl(properties.getApiUrlCompact(), params);
+        HttpHeaders headers = yrApiUtil.getRequiredHeaders(properties.getUserAgentHeaderValue());
 
         if (log.isDebugEnabled()) {
             log.debug(buildApiCallMessage(urlTemplate));
@@ -57,8 +57,8 @@ public class YrWeatherApiService implements WeatherApiService {
             log.debug(buildApiResponseMessage(responseEntity.getBody()));
         }
 
-        util.validateBody(responseEntity);
-        util.validateResponseStatus(responseEntity);
+        yrApiUtil.validateBody(responseEntity);
+        yrApiUtil.validateResponseStatus(responseEntity);
         return deserializer.deserializeApiResponse(responseEntity.getBody());
     }
 

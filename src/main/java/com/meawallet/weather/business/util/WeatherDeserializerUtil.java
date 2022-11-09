@@ -19,9 +19,7 @@ public class WeatherDeserializerUtil {
 
     public ObjectMapper getWeatherObjectMapper(JsonDeserializer<? extends WeatherApiDto> deserializer) {
         ObjectMapper mapper = new ObjectMapper();
-
         mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         SimpleModule module = new SimpleModule(deserializer.getClass().toString());
         module.addDeserializer(WeatherApiDto.class, deserializer);
         mapper.registerModule(module);
