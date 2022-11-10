@@ -10,6 +10,8 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLatValueWasAdjustedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLonValueWasAdjustedMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -49,8 +51,7 @@ class RequestParamFormatterTest {
         Float result = victim.formatLatValue(expected);
 
         assertNotEquals(expected, result);
-        assertThat(output.getOut()).contains(expected.toString());
-        assertThat(output.getOut()).contains(result.toString());
+        assertThat(output.getOut()).contains(buildLatValueWasAdjustedMessage(expected, result));
         verify(properties, times(1)).getApiLatMaxDecimalValue();
         verifyNoMoreInteractions(properties);
     }
@@ -76,8 +77,7 @@ class RequestParamFormatterTest {
         Float result = victim.formatLonValue(expected);
 
         assertNotEquals(expected, result);
-        assertThat(output.getOut()).contains(expected.toString());
-        assertThat(output.getOut()).contains(result.toString());
+        assertThat(output.getOut()).contains(buildLonValueWasAdjustedMessage(expected, result));
         verify(properties, times(1)).getApiLonMaxDecimalValue();
         verifyNoMoreInteractions(properties);
     }

@@ -1,13 +1,15 @@
-package com.meawallet.weather.util;
+package com.meawallet.weather.test.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meawallet.weather.repository.entity.WeatherEntity;
-import com.meawallet.weather.controller.impl.WeatherControllerImpl;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
+import com.meawallet.weather.payload.YrApiServiceRequestDto;
+import com.meawallet.weather.repository.entity.WeatherEntity;
+import com.meawallet.weather.web.controller.impl.WeatherControllerImpl;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class WeatherTestUtil {
@@ -32,11 +35,12 @@ public class WeatherTestUtil {
     public static final Float PRECISE_LAT = 56.9481F;
     public static final Float PRECISE_LON = 24.1083F;
     public static final Integer PRECISE_ALTITUDE = 9000;
-    public static final int maxTotalConnections = 50;
-    public static final int maxConnectionsPerRouteDefault = 20;
-    public static final int connectionRequestTimeout = 5000;
-    public static final int socketTimeout = 5000;
-    public static final int connectTimeout = 5000;
+    public static final int MAX_TOTAL_CONNECTIONS = 50;
+    public static final int MAX_CONNECTIONS_PER_ROUTE_DEFAULT = 20;
+    public static final int CONNECTION_REQUEST_TIMEOUT = 5000;
+    public static final int SOCKET_TIMEOUT = 5000;
+    public static final int CONNECT_TIMEOUT = 5000;
+    public static final String TEST_USER_AGENT_VALUE = "UniqueUserAgent";
 
 
     //Controller Test urls
@@ -52,16 +56,16 @@ public class WeatherTestUtil {
 
 
     //API Service Test urls
-    public static final String WEATHER_API_URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact";
+    public static final String WEATHER_API_URL_COMPACT = "https://api.met.no/weatherapi/locationforecast/2.0/compact";
     public static final String WEATHER_API_URL_NO_ALT_PARAM = "?lat=" + LAT + "&lon=" + LON;
     public static final String WEATHER_API_URL_ALL_PARAMS = WEATHER_API_URL_NO_ALT_PARAM + "&altitude=" + ALTITUDE;
-    public static final String WEATHER_API_URL_WITH_ALL_PARAMS = WEATHER_API_URL + WEATHER_API_URL_ALL_PARAMS;
-    public static final String WEATHER_API_URL_WITH_NO_ALT_PARAM = WEATHER_API_URL + WEATHER_API_URL_NO_ALT_PARAM;
+    public static final String WEATHER_API_URL_WITH_ALL_PARAMS = WEATHER_API_URL_COMPACT + WEATHER_API_URL_ALL_PARAMS;
+    public static final String WEATHER_API_URL_WITH_NO_ALT_PARAM = WEATHER_API_URL_COMPACT + WEATHER_API_URL_NO_ALT_PARAM;
     public static final String WEATHER_API_URL_NO_ALT_PRECISE_PARAMS = "?lat=" + PRECISE_LAT + "&lon=" + PRECISE_LON;
     public static final String WEATHER_API_URL_ALL_PRECISE_PARAMS = WEATHER_API_URL_NO_ALT_PRECISE_PARAMS +
             "&altitude=" + PRECISE_ALTITUDE;
     public static final String WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS =
-            WEATHER_API_URL + WEATHER_API_URL_ALL_PRECISE_PARAMS;
+            WEATHER_API_URL_COMPACT + WEATHER_API_URL_ALL_PRECISE_PARAMS;
 
 
     //Json node
@@ -127,6 +131,14 @@ public class WeatherTestUtil {
         return entity;
     }
 
+    public static YrApiServiceRequestDto yrApiServiceRequestDto() {
+        return YrApiServiceRequestDto.builder()
+                .url(WEATHER_API_URL_WITH_ALL_PARAMS)
+                .httpMethod(GET)
+                .httpEntity(new HttpEntity<>(null, null))
+                .build();
+    }
+
     public static Map<String, String> getUrlParamsWithAlt() {
         Map<String, String> params = new HashMap<>();
         params.put("lat", LAT.toString());
@@ -143,7 +155,7 @@ public class WeatherTestUtil {
 
     public static HttpHeaders getRequiredHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(USER_AGENT, "UniqueUserAgent");
+        headers.add(USER_AGENT, TEST_USER_AGENT_VALUE);
         headers.add(ACCEPT, APPLICATION_JSON_VALUE);
         return headers;
     }

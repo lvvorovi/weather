@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
-import static com.meawallet.weather.util.WeatherTestUtil.ARRAY_NODE_STRING;
+import static com.meawallet.weather.test.util.WeatherTestUtil.ARRAY_NODE_STRING;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -19,10 +19,10 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
 import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildNotFoundWhileHasToBeFoundMessage;
-import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
-import static com.meawallet.weather.util.WeatherTestUtil.LAT;
-import static com.meawallet.weather.util.WeatherTestUtil.LON;
-import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
+import static com.meawallet.weather.test.util.WeatherTestUtil.ALTITUDE;
+import static com.meawallet.weather.test.util.WeatherTestUtil.LAT;
+import static com.meawallet.weather.test.util.WeatherTestUtil.LON;
+import static com.meawallet.weather.test.util.WeatherTestUtil.weatherResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;

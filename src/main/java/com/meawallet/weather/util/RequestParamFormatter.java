@@ -1,12 +1,14 @@
 package com.meawallet.weather.util;
 
-import com.meawallet.weather.properties.WeatherProperties;
 import com.meawallet.weather.message.store.WeatherServiceMessageStore;
+import com.meawallet.weather.properties.WeatherProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
+
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildLatValueWasAdjustedMessage;
 
 
 @Component
@@ -22,7 +24,7 @@ public class RequestParamFormatter {
         float formattedLat = Float.parseFloat(formatter.format(lat));
 
         if (log.isDebugEnabled() && !lat.equals(formattedLat)) {
-            log.debug(WeatherServiceMessageStore.buildLatValueWasAdjustedMessage(lat, formattedLat));
+            log.debug(buildLatValueWasAdjustedMessage(lat, formattedLat));
         }
 
         return formattedLat;
