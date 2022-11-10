@@ -4,8 +4,21 @@ plugins {
     id 'java'
 }
 
+version = '0.1.0 SNAPSHOT'
 group 'com.meawallet'
 version '1.0-SNAPSHOT'
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Jar File Example',
+        'Implementation-Version': version,
+        'Main-Class': 'com.meawallet.weather.WeatherApp'
+    }
+    baseName = project.name + '-allDependencies'
+    from{ configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it)} }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    with jar
+}
 
 repositories {
     mavenCentral()
