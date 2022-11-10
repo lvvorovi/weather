@@ -1,8 +1,9 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.business.service.WeatherApiService;
-import com.meawallet.weather.business.service.WeatherService;
-import com.meawallet.weather.business.util.RequestParamFormatter;
+import com.meawallet.weather.service.WeatherApiService;
+import com.meawallet.weather.service.WeatherService;
+import com.meawallet.weather.service.impl.WeatherServiceFacadeImpl;
+import com.meawallet.weather.util.RequestParamFormatter;
 import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
 import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.handler.exception.WeatherEntityNotFoundWhenStoredException;
@@ -17,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.business.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
-import static com.meawallet.weather.business.message.store.WeatherServiceFacadeMessageStore.buildNotFoundWhileHasToBeFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
+import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildNotFoundWhileHasToBeFoundMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;

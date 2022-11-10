@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meawallet.weather.business.repository.entity.WeatherEntity;
+import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.controller.impl.WeatherControllerImpl;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;

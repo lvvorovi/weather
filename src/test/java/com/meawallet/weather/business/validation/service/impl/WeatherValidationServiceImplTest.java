@@ -1,11 +1,12 @@
 package com.meawallet.weather.business.validation.service.impl;
 
-import com.meawallet.weather.business.validation.rule.WeatherApiDtoValidationRule;
-import com.meawallet.weather.business.validation.rule.impl.LatitudeWeatherApiDtoValidationRule;
-import com.meawallet.weather.business.validation.rule.impl.LongitudeWeatherApiDtoValidationRule;
-import com.meawallet.weather.business.validation.rule.impl.TemperatureWeatherApiDtoValidationRule;
-import com.meawallet.weather.business.validation.rule.impl.TimeStampWeatherApiDtoValidationRule;
+import com.meawallet.weather.validation.rule.WeatherApiDtoValidationRule;
+import com.meawallet.weather.validation.rule.impl.LatitudeWeatherApiDtoValidationRule;
+import com.meawallet.weather.validation.rule.impl.LongitudeWeatherApiDtoValidationRule;
+import com.meawallet.weather.validation.rule.impl.TemperatureWeatherApiDtoValidationRule;
+import com.meawallet.weather.validation.rule.impl.TimeStampWeatherApiDtoValidationRule;
 import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.validation.service.impl.WeatherValidationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

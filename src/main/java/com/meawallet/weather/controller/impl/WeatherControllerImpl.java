@@ -1,6 +1,6 @@
 package com.meawallet.weather.controller.impl;
 
-import com.meawallet.weather.business.service.WeatherServiceFacade;
+import com.meawallet.weather.service.WeatherServiceFacade;
 import com.meawallet.weather.controller.WeatherController;
 import com.meawallet.weather.model.WeatherResponseDto;
 import lombok.RequiredArgsConstructor;

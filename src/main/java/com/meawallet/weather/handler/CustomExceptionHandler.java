@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 
-import static com.meawallet.weather.business.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
-import static com.meawallet.weather.business.message.store.ExceptionHandlerMessageStore.buildValidationFailedMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildValidationFailedMessage;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
