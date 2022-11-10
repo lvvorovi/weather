@@ -1,15 +1,15 @@
 package com.meawallet.weather.service.impl;
 
+import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
+import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.mapper.WeatherMapper;
+import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.model.WeatherResponseDto;
+import com.meawallet.weather.properties.WeatherProperties;
 import com.meawallet.weather.repository.WeatherRepository;
 import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.service.WeatherService;
 import com.meawallet.weather.validation.service.WeatherValidationService;
-import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
-import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
-import com.meawallet.weather.model.WeatherApiDto;
-import com.meawallet.weather.model.WeatherResponseDto;
-import com.meawallet.weather.properties.WeatherProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,7 +44,7 @@ public class WeatherServiceImpl implements WeatherService {
     public WeatherResponseDto findDtoByLatAndLonAndAlt(Float lat, Float lon, Integer altitude) {
         WeatherResponseDto responseDto = repository
                 .findDtoByLatAndLonAndAltitudeAndTimeStamp(lat, lon, altitude, NOW_TRUNCATED_TO_HOURS)
-                .orElseThrow(() ->new WeatherEntityNotFoundException(
+                .orElseThrow(() -> new WeatherEntityNotFoundException(
                         buildDtoNotFoundMessage(lat, lon, altitude, NOW_TRUNCATED_TO_HOURS)));
 
         log.info(buildDtoFoundMessage(lat, lon, altitude, NOW_TRUNCATED_TO_HOURS));
@@ -59,8 +59,8 @@ public class WeatherServiceImpl implements WeatherService {
         WeatherEntity savedEntity;
 
         try {
-             savedEntity = repository.save(requestEntity);
-        } catch (DataIntegrityViolationException ex ) {
+            savedEntity = repository.save(requestEntity);
+        } catch (DataIntegrityViolationException ex) {
             throw new WeatherEntityAlreadyExistsException(buildAlreadyExistsMessage(requestEntity));
         }
 

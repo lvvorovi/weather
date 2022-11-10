@@ -1,9 +1,9 @@
 package com.meawallet.weather.mapper.impl;
 
 import com.meawallet.weather.mapper.WeatherMapper;
-import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
+import com.meawallet.weather.repository.entity.WeatherEntity;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,5 @@
 package com.meawallet.weather.message.store;
 
-import java.time.LocalDateTime;
-
 public class WeatherValidationMessageStore {
 
     private static final String API_RETURN_MESSAGE = "Weather API returned null value for ";

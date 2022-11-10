@@ -15,8 +15,7 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .cors().disable()
-//                .authorizeRequests().anyRequest().authenticated()
-                .authorizeRequests().anyRequest().permitAll()
+                .authorizeRequests().anyRequest().authenticated()
                 .and()
                 .oauth2ResourceServer().jwt()
                 .and()

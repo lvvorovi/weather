@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meawallet.weather.util.WeatherDeserializerUtil;
 import com.meawallet.weather.handler.exception.WeatherApiDtoCustomDeserializerException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.properties.WeatherProperties;
+import com.meawallet.weather.util.WeatherDeserializerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
 package com.meawallet.weather.validation.service.impl;
 
+import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.validation.rule.WeatherApiDtoValidationRule;
 import com.meawallet.weather.validation.service.WeatherValidationService;
-import com.meawallet.weather.model.WeatherApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
