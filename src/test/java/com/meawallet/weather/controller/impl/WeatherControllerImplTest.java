@@ -1,6 +1,6 @@
 package com.meawallet.weather.controller.impl;
 
-import com.meawallet.weather.business.service.impl.WeatherServiceFacadeImpl;
+import com.meawallet.weather.service.impl.WeatherServiceFacadeImpl;
 import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import org.junit.jupiter.api.Test;

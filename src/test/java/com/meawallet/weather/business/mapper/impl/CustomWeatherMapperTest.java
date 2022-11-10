@@ -1,6 +1,7 @@
 package com.meawallet.weather.business.mapper.impl;
 
-import com.meawallet.weather.business.repository.entity.WeatherEntity;
+import com.meawallet.weather.mapper.impl.CustomWeatherMapper;
+import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import org.junit.jupiter.api.Test;

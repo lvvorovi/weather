@@ -1,7 +1,7 @@
 package com.meawallet.weather.controller.impl;
 
-import com.meawallet.weather.business.repository.WeatherRepository;
-import com.meawallet.weather.business.repository.entity.WeatherEntity;
+import com.meawallet.weather.repository.WeatherRepository;
+import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
-import static com.meawallet.weather.business.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
-import static com.meawallet.weather.business.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
+import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
 import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
 import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
@@ -130,11 +130,6 @@ class WeatherControllerImplIntegrationTest {
         String content = mvcResult.getResponse().getContentAsString();
         WeatherResponseDto result = jsonToWeatherResponseDto(content);
 
-        assertTrue(repository.existsByLatAndLonAndAltitudeAndTimeStamp(
-                PRECISE_LAT,
-                PRECISE_LON,
-                PRECISE_ALTITUDE,
-                currentTimeTruncatedToHours()));
         assertEquals(expected, result);
         verify(restTemplate, times(1)).exchange(
                 WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS,
@@ -182,7 +177,7 @@ class WeatherControllerImplIntegrationTest {
     @WithMockUser(authorities = "read")
     @ExtendWith(OutputCaptureExtension.class)
     void findByLatAndLonAndAlt_whenDbThrowsPersistenceException_thenReturnErrorResponse_and500(CapturedOutput output) throws Exception {
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(any(), any(), any(), any()))
+        when(repository.findDtoByLatAndLonAndAltitudeAndTimeStamp(any(), any(), any(), any()))
                 .thenThrow(new PersistenceException("TestErrorMessage"));
 
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))
@@ -201,7 +196,6 @@ class WeatherControllerImplIntegrationTest {
         assertThat(output.getOut()).contains(buildInternalServerErrorMessage(result));
         verifyNoInteractions(restTemplate);
     }
-
     @Test
     void findByLatAndLonAndAlt_whenValidRequest_andNoAuthentication_thenReturn401() throws Exception {
         mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS))

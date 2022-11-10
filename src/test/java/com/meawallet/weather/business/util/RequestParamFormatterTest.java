@@ -1,6 +1,7 @@
 package com.meawallet.weather.business.util;
 
 import com.meawallet.weather.properties.WeatherProperties;
+import com.meawallet.weather.util.RequestParamFormatter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

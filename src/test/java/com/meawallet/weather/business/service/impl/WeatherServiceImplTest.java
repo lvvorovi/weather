@@ -1,9 +1,11 @@
 package com.meawallet.weather.business.service.impl;
 
-import com.meawallet.weather.business.mapper.WeatherMapper;
-import com.meawallet.weather.business.repository.WeatherRepository;
-import com.meawallet.weather.business.repository.entity.WeatherEntity;
-import com.meawallet.weather.business.validation.service.WeatherValidationService;
+import com.meawallet.weather.mapper.WeatherMapper;
+import com.meawallet.weather.repository.WeatherRepository;
+import com.meawallet.weather.repository.entity.WeatherEntity;
+import com.meawallet.weather.service.impl.WeatherServiceImpl;
+import com.meawallet.weather.validation.service.WeatherValidationService;
+import com.meawallet.weather.handler.exception.WeatherEntityAlreadyExistsException;
 import com.meawallet.weather.handler.exception.WeatherEntityNotFoundException;
 import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.model.WeatherResponseDto;
@@ -15,14 +17,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildDeletedMessage;
-import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildFoundMessage;
-import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildNotFoundMessage;
-import static com.meawallet.weather.business.message.store.WeatherServiceMessageStore.buildSavedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildAlreadyExistsMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildDeletedMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildDtoFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildDtoNotFoundMessage;
+import static com.meawallet.weather.message.store.WeatherServiceMessageStore.buildSavedMessage;
 import static com.meawallet.weather.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.util.WeatherTestUtil.LON;
@@ -61,34 +65,31 @@ class WeatherServiceImplTest {
 
     @Test
     void findByLatAndLonAndAlt_whenFoundInDb_thenReturnResponse(CapturedOutput output) {
-        WeatherEntity entity = weatherEntity();
         WeatherResponseDto expected = weatherResponseDto();
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
-                .thenReturn(Optional.of(entity));
-        when(mapper.entityToDto(entity)).thenReturn(expected);
+        when(repository.findDtoByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
+                .thenReturn(Optional.of(expected));
 
         WeatherResponseDto result = victim.findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildFoundMessage(LAT, LON, ALTITUDE, NOW));
+        assertThat(output.getOut()).contains(buildDtoFoundMessage(LAT, LON, ALTITUDE, NOW));
         verify(repository, times(1))
-                .findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
-        verify(mapper, times(1)).entityToDto(entity);
-        verifyNoMoreInteractions(repository, mapper);
-        verifyNoInteractions(validationService, properties);
+                .findDtoByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(validationService, properties, mapper);
     }
 
     @Test
     void findByLatAndLonAndAlt_whenNotFoundInDb_thenThrowWeatherEntityNotFoundException(CapturedOutput output) {
-        when(repository.findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
+        when(repository.findDtoByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW))
                 .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> victim.findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE))
                 .isInstanceOf(WeatherEntityNotFoundException.class)
-                .hasMessage(buildNotFoundMessage(LAT, LON, ALTITUDE, NOW));
+                .hasMessage(buildDtoNotFoundMessage(LAT, LON, ALTITUDE, NOW));
 
         assertThat(output.getOut()).isEmpty();
-        verify(repository, times(1)).findByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
+        verify(repository, times(1)).findDtoByLatAndLonAndAltitudeAndTimeStamp(LAT, LON, ALTITUDE, NOW);
         verifyNoMoreInteractions(repository);
         verifyNoInteractions(validationService, mapper, properties);
     }
@@ -114,6 +115,29 @@ class WeatherServiceImplTest {
         verify(mockedEntity, times(1)).setId(anyString());
         verify(repository, times(1)).save(mockedEntity);
         verify(mapper, times(1)).entityToDto(entity);
+        verifyNoMoreInteractions(validationService, repository, mapper);
+        verifyNoInteractions(properties);
+    }
+
+    @Test
+    void save_whenValidRequest_andFoundInDb_thenThrowWeatherEntityAlreadyExistsException(CapturedOutput output) {
+        WeatherApiDto requestDto = weatherApiDto();
+        WeatherEntity mockedEntity = mock(WeatherEntity.class);
+        DataIntegrityViolationException exception =
+                new DataIntegrityViolationException("TestDataIntegrityViolationException");
+        doNothing().when(validationService).validate(requestDto);
+        when(mapper.dtoToEntity(requestDto)).thenReturn(mockedEntity);
+        doNothing().when(mockedEntity).setId(anyString());
+        when(repository.save(mockedEntity)).thenThrow(exception);
+
+         assertThatThrownBy(() -> victim.save(requestDto))
+                 .isInstanceOf(WeatherEntityAlreadyExistsException.class)
+                         .hasMessage(buildAlreadyExistsMessage(mockedEntity));
+
+        verify(validationService, times(1)).validate(requestDto);
+        verify(mapper, times(1)).dtoToEntity(requestDto);
+        verify(mockedEntity, times(1)).setId(anyString());
+        verify(repository, times(1)).save(mockedEntity);
         verifyNoMoreInteractions(validationService, repository, mapper);
         verifyNoInteractions(properties);
     }
@@ -147,6 +171,5 @@ class WeatherServiceImplTest {
         verifyNoMoreInteractions(repository, properties);
         verifyNoInteractions(validationService, mapper);
     }
-
 
 }
