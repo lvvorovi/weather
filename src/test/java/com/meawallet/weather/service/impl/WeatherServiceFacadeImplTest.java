@@ -14,16 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildFindRequestMessage;
 import static com.meawallet.weather.message.store.WeatherServiceFacadeMessageStore.buildNotFoundWhileHasToBeFoundMessage;
 import static com.meawallet.weather.test.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.test.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.test.util.WeatherTestUtil.LON;
 import static com.meawallet.weather.test.util.WeatherTestUtil.weatherResponseDto;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
@@ -34,7 +30,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+@ExtendWith({MockitoExtension.class})
 class WeatherServiceFacadeImplTest {
 
     @Mock
@@ -47,7 +43,7 @@ class WeatherServiceFacadeImplTest {
     WeatherServiceFacadeImpl victim;
 
     @Test
-    void findByLatAndLonAndAlt_whenFoundInDb_thenReturnResponse(CapturedOutput output) {
+    void findByLatAndLonAndAlt_whenFoundInDb_thenReturnResponse() {
         WeatherResponseDto expected = weatherResponseDto();
         when(util.formatLatValue(LAT)).thenReturn(LAT);
         when(util.formatLonValue(LON)).thenReturn(LON);
@@ -56,7 +52,6 @@ class WeatherServiceFacadeImplTest {
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildFindRequestMessage(LAT, LON, ALTITUDE));
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
         verify(service, times(1)).findDtoByLatAndLonAndAlt(LAT, LON, ALTITUDE);
@@ -65,7 +60,7 @@ class WeatherServiceFacadeImplTest {
     }
 
     @Test
-    void findByLatAndLonAndAlt_whenNotFoundInDb_thenCallApiService_save_andReturn(CapturedOutput output) {
+    void findByLatAndLonAndAlt_whenNotFoundInDb_thenCallApiService_save_andReturn() {
         WeatherResponseDto expected = weatherResponseDto();
         WeatherApiDto apiDtoMock = mock(WeatherApiDto.class);
         when(util.formatLatValue(LAT)).thenReturn(LAT);
@@ -79,8 +74,6 @@ class WeatherServiceFacadeImplTest {
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, null);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildFindRequestMessage(LAT, LON, null));
-        assertThat(output.getOut()).contains("TestDtoNotFoundMessage");
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
         verify(service, times(1)).findDtoByLatAndLonAndAlt(LAT, LON, null);
@@ -95,7 +88,7 @@ class WeatherServiceFacadeImplTest {
             In case another thread already saved entity during current thread API call,
             it will fail to save, find saved entity and will return it
             """)
-    void findByLatAndLonAndAlt_whenNotFoundInDb_thenFindFromSecondAttend_andReturn(CapturedOutput output) {
+    void findByLatAndLonAndAlt_whenNotFoundInDb_thenFindFromSecondAttend_andReturn() {
         WeatherResponseDto expected = weatherResponseDto();
         WeatherApiDto apiDtoMock = mock(WeatherApiDto.class);
         when(util.formatLatValue(LAT)).thenReturn(LAT);
@@ -110,9 +103,6 @@ class WeatherServiceFacadeImplTest {
         WeatherResponseDto result = victim.findByLatAndLonAndAlt(LAT, LON, null);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildFindRequestMessage(LAT, LON, null));
-        assertThat(output.getOut()).contains("TestDtoNotFoundMessage");
-        assertThat(output.getOut()).contains("TestAlreadyExistsMessage");
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
         verify(service, times(2)).findDtoByLatAndLonAndAlt(LAT, LON, null);
@@ -127,7 +117,7 @@ class WeatherServiceFacadeImplTest {
             In case another thread already saved entity during current thread API call,
             it will fail to save, will not find saved entity and then will throw Exception
             """)
-    void findByLatAndLonAndAlt_whenNotFoundInDb_andNotFoundFromSecondAttend_thenThrowWeatherDtoNotFoundException(CapturedOutput output) {
+    void findByLatAndLonAndAlt_whenNotFoundInDb_andNotFoundFromSecondAttend_thenThrowWeatherDtoNotFoundException() {
         WeatherEntityNotFoundException notFoundException = new WeatherEntityNotFoundException("TestDtoNotFoundMessage");
         WeatherApiDto apiDtoMock = mock(WeatherApiDto.class);
         when(util.formatLatValue(LAT)).thenReturn(LAT);
@@ -143,10 +133,6 @@ class WeatherServiceFacadeImplTest {
                 .hasMessage(buildNotFoundWhileHasToBeFoundMessage(
                         "TestDtoNotFoundMessage", notFoundException));
 
-        assertThat(output.getOut()).contains(buildFindRequestMessage(LAT, LON, null));
-        assertThat(output.getOut()).contains("TestDtoNotFoundMessage");
-        assertThat(output.getOut()).contains("TestAlreadyExistsMessage");
-        assertThat(output.getOut()).contains("TestDtoNotFoundMessage");
         verify(util, times(1)).formatLatValue(LAT);
         verify(util, times(1)).formatLonValue(LON);
         verify(service, times(2)).findDtoByLatAndLonAndAlt(LAT, LON, null);

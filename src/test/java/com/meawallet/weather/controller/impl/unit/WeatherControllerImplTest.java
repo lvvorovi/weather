@@ -1,8 +1,9 @@
-package com.meawallet.weather.web.controller.impl;
+package com.meawallet.weather.controller.impl.unit;
 
 import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.service.impl.WeatherServiceFacadeImpl;
+import com.meawallet.weather.web.controller.impl.WeatherControllerImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

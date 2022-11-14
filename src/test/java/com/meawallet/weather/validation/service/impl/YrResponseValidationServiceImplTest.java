@@ -3,7 +3,6 @@ package com.meawallet.weather.validation.service.impl;
 import com.meawallet.weather.validation.rule.YrStringResponseValidationRule;
 import com.meawallet.weather.validation.rule.impl.YrResponseBodyValidationRule;
 import com.meawallet.weather.validation.rule.impl.YrResponseStatusValidationRule;
-import com.meawallet.weather.validation.service.impl.YrResponseValidationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,11 +15,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class YrResponseValidationServiceImplTest {

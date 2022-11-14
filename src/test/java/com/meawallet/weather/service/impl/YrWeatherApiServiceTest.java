@@ -1,11 +1,12 @@
 package com.meawallet.weather.service.impl;
 
 import com.meawallet.weather.deserializer.WeatherApiDtoDeserializer;
-import com.meawallet.weather.handler.exception.WeatherApiServiceException;
-import com.meawallet.weather.model.WeatherApiDto;
 import com.meawallet.weather.payload.YrApiServiceRequestDto;
+import com.meawallet.weather.service.impl.YrWeatherApiService;
 import com.meawallet.weather.util.YrServiceRequestBuilder;
 import com.meawallet.weather.validation.service.impl.YrResponseValidationServiceImpl;
+import com.meawallet.weather.handler.exception.WeatherApiServiceException;
+import com.meawallet.weather.model.WeatherApiDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,14 +20,11 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallMessage;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiResponseMessage;
 import static com.meawallet.weather.test.util.WeatherTestUtil.ALTITUDE;
 import static com.meawallet.weather.test.util.WeatherTestUtil.LAT;
 import static com.meawallet.weather.test.util.WeatherTestUtil.LON;
 import static com.meawallet.weather.test.util.WeatherTestUtil.weatherApiDto;
 import static com.meawallet.weather.test.util.WeatherTestUtil.yrApiServiceRequestDto;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
@@ -37,7 +35,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 
-@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+@ExtendWith({MockitoExtension.class})
 @ActiveProfiles("test.properties")
 class YrWeatherApiServiceTest {
 
@@ -54,7 +52,7 @@ class YrWeatherApiServiceTest {
     YrWeatherApiService victim;
 
     @Test
-    void getByLatAndLonAndAlt_whenAllParams_thenValidResponse(CapturedOutput output) {
+    void getByLatAndLonAndAlt_whenAllParams_thenValidResponse() {
         WeatherApiDto expected = weatherApiDto();
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
         YrApiServiceRequestDto requestDto = yrApiServiceRequestDto();
@@ -72,8 +70,6 @@ class YrWeatherApiServiceTest {
         WeatherApiDto result = victim.getByLatAndLonAndAlt(LAT, LON, ALTITUDE);
 
         assertEquals(expected, result);
-        assertThat(output.getOut()).contains(buildApiCallMessage(requestDto.getUrl()));
-        assertThat(output.getOut()).contains(buildApiResponseMessage(responseEntity.getBody()));
         verify(requestBuilder, times(1)).build(LAT, LON, ALTITUDE, GET);
         verify(restTemplate, times(1)).exchange(
                 requestDto.getUrl(),
@@ -86,7 +82,7 @@ class YrWeatherApiServiceTest {
     }
 
     @Test
-    void getByLatAndLonAndAlt_whenRestTemplateThrowsRestClientException_thenThrowWeatherApiServiceException(CapturedOutput output) {
+    void getByLatAndLonAndAlt_whenRestTemplateThrowsRestClientException_thenThrowWeatherApiServiceException() {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body("Body");
         YrApiServiceRequestDto requestDto = yrApiServiceRequestDto();
         when(requestBuilder.build(LAT, LON, ALTITUDE, GET)).thenReturn(requestDto);
@@ -101,8 +97,6 @@ class YrWeatherApiServiceTest {
                 .isInstanceOf(WeatherApiServiceException.class)
                 .hasMessage(buildApiCallExceptionMessage("TestRestClientExceptionMessage"));
 
-        assertThat(output.getOut()).contains(buildApiCallMessage(requestDto.getUrl()));
-        assertThat(output.getOut()).doesNotContain(buildApiResponseMessage(responseEntity.getBody()));
         verify(requestBuilder, times(1)).build(LAT, LON, ALTITUDE, GET);
         verify(restTemplate, times(1)).exchange(
                 requestDto.getUrl(),

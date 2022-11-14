@@ -2,7 +2,6 @@ package com.meawallet.weather.payload;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 
