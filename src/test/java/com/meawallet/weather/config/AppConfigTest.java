@@ -4,14 +4,15 @@ import com.meawallet.weather.properties.ConnectionProperties;
 import com.meawallet.weather.properties.TaskSchedulerProperties;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.meawallet.weather.test.util.WeatherTestUtil.CONNECT_TIMEOUT;
 import static com.meawallet.weather.test.util.WeatherTestUtil.CONNECTION_REQUEST_TIMEOUT;
+import static com.meawallet.weather.test.util.WeatherTestUtil.CONNECT_TIMEOUT;
 import static com.meawallet.weather.test.util.WeatherTestUtil.MAX_CONNECTIONS_PER_ROUTE_DEFAULT;
 import static com.meawallet.weather.test.util.WeatherTestUtil.MAX_TOTAL_CONNECTIONS;
 import static com.meawallet.weather.test.util.WeatherTestUtil.SOCKET_TIMEOUT;

@@ -15,7 +15,12 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .cors().disable()
-                .authorizeRequests().anyRequest().authenticated()
+                .authorizeRequests()
+                .mvcMatchers("/swagger-ui/**").permitAll()
+                .mvcMatchers("/swagger-resources/**").permitAll()
+                .mvcMatchers("/v2/api-docs").permitAll()
+                .mvcMatchers("/actuator/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .oauth2ResourceServer().jwt()
                 .and()

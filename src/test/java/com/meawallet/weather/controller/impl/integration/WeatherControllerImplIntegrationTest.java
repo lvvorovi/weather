@@ -4,6 +4,7 @@ import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.repository.WeatherRepository;
 import com.meawallet.weather.repository.entity.WeatherEntity;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
+import static com.meawallet.weather.message.store.WeatherApiCallExecutorMessageStore.buildApiCallExceptionMessage;
 import static com.meawallet.weather.test.util.JsonTestUtil.jsonToErrorDto;
 import static com.meawallet.weather.test.util.JsonTestUtil.jsonToWeatherResponseDto;
 import static com.meawallet.weather.test.util.WeatherTestUtil.COMPLETE_NODE_STRING;
@@ -54,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public class WeatherControllerImplIntegrationTest {
+class WeatherControllerImplIntegrationTest {
 
     @MockBean
     RestTemplate restTemplate;
@@ -149,7 +150,7 @@ public class WeatherControllerImplIntegrationTest {
 
         assertEquals(INTERNAL_SERVER_ERROR.value(), result.getCode());
         assertEquals(GET.toString(), result.getMethod());
-        assertEquals("/weather", result.getUri());
+        assertEquals("/api/v1/weather", result.getUri());
         assertEquals(buildApiCallExceptionMessage("TestErrorMessage"), result.getMessage());
         assertEquals(INTERNAL_SERVER_ERROR.getReasonPhrase(), result.getError());
         assertNotNull(result.getTimeStamp());
@@ -177,7 +178,7 @@ public class WeatherControllerImplIntegrationTest {
 
         assertEquals(INTERNAL_SERVER_ERROR.value(), result.getCode());
         assertEquals(GET.toString(), result.getMethod());
-        assertEquals("/weather", result.getUri());
+        assertEquals("/api/v1/weather", result.getUri());
         assertThat(result.getMessage()).contains("TestErrorMessage");
         assertEquals(INTERNAL_SERVER_ERROR.getReasonPhrase(), result.getError());
         assertNotNull(result.getTimeStamp());

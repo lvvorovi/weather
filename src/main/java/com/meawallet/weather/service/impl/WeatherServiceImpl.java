@@ -71,11 +71,13 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     @Scheduled(cron = "${weather.scheduling-delete-cron}")
     public void deleteOutdated() {
+        if (!properties.getIsMasterJvm()) return;
+
         List<WeatherEntity> deletedEntityList = repository
                 .deleteByTimeStampBefore(NOW.minusHours(properties.getEntityTtlHours()));
 
-        if (log.isDebugEnabled()) {
-            deletedEntityList.forEach(entity -> log.debug(buildDeletedMessage(entity.getId())));
+        if (!deletedEntityList.isEmpty()) {
+            log.debug(buildDeletedMessage(deletedEntityList));
         }
     }
 }

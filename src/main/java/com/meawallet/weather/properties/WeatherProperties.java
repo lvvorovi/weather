@@ -37,5 +37,7 @@ public class WeatherProperties {
     private int apiAltitudeMaxValue;
     @NotNull
     private int apiAltitudeMinValue;
+    @NotNull
+    private Boolean isMasterJvm;
 
 }

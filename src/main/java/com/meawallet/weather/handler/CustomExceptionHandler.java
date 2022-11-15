@@ -12,9 +12,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
 
 import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
+import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildRuntimeExceptionMessage;
 import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildValidationFailedMessage;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -59,7 +59,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorDto> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
         ErrorDto errorDto = new ErrorDto(INTERNAL_SERVER_ERROR, ex.getMessage(), request);
-        log.error(buildInternalServerErrorMessage(errorDto) + "\n" + Arrays.toString(ex.getStackTrace()));
+        log.error(buildRuntimeExceptionMessage(errorDto, ex));
         return buildResponse(INTERNAL_SERVER_ERROR, errorDto);
     }
 
@@ -69,5 +69,4 @@ public class CustomExceptionHandler {
                 .contentType(APPLICATION_JSON)
                 .body(errorDto);
     }
-
 }

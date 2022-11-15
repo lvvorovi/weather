@@ -8,5 +8,4 @@ public class TestJsonProcessingException extends JsonProcessingException {
         super(msg);
     }
 
-
 }

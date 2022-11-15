@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.meawallet.weather.model.WeatherApiDto;
+import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.payload.YrApiServiceRequestDto;
 import com.meawallet.weather.repository.entity.WeatherEntity;
 import com.meawallet.weather.web.controller.impl.WeatherControllerImpl;
-import com.meawallet.weather.model.WeatherApiDto;
-import com.meawallet.weather.model.WeatherResponseDto;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.HttpMethod.GET;
@@ -59,7 +57,8 @@ public class WeatherTestUtil {
     public static final String WEATHER_API_URL_NO_ALT_PARAM = "?lat=" + LAT + "&lon=" + LON;
     public static final String WEATHER_API_URL_ALL_PARAMS = WEATHER_API_URL_NO_ALT_PARAM + "&altitude=" + ALTITUDE;
     public static final String WEATHER_API_URL_WITH_ALL_PARAMS = WEATHER_API_URL_COMPACT + WEATHER_API_URL_ALL_PARAMS;
-    public static final String WEATHER_API_URL_WITH_NO_ALT_PARAM = WEATHER_API_URL_COMPACT + WEATHER_API_URL_NO_ALT_PARAM;
+    public static final String WEATHER_API_URL_WITH_NO_ALT_PARAM =
+            WEATHER_API_URL_COMPACT + WEATHER_API_URL_NO_ALT_PARAM;
     public static final String WEATHER_API_URL_NO_ALT_PRECISE_PARAMS = "?lat=" + PRECISE_LAT + "&lon=" + PRECISE_LON;
     public static final String WEATHER_API_URL_ALL_PRECISE_PARAMS = WEATHER_API_URL_NO_ALT_PRECISE_PARAMS +
             "&altitude=" + PRECISE_ALTITUDE;

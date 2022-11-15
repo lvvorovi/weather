@@ -5,7 +5,7 @@ plugins {
 }
 
 version = '0.1.0 SNAPSHOT'
-git group 'com.meawallet.weather'
+group 'com.meawallet.weather'
 version '1.0-SNAPSHOT'
 
 task fatJar(type: Jar) {
@@ -36,6 +36,8 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0'
     implementation 'org.apache.httpcomponents:httpclient'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -44,6 +46,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     testImplementation 'org.junit.platform:junit-platform-suite-api'
     testRuntimeOnly 'org.junit.platform:junit-platform-suite-engine'
@@ -51,5 +54,5 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform{}
 }

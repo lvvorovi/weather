@@ -22,15 +22,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class YrResponseValidationServiceImplTest {
 
-    private List<YrStringResponseValidationRule> ruleList;
-
     @Mock
     YrResponseStatusValidationRule statusValidationRule;
     @Mock
     YrResponseBodyValidationRule bodyValidationRule;
-
     @InjectMocks
     YrResponseValidationServiceImpl victim;
+    private List<YrStringResponseValidationRule> ruleList;
 
     @BeforeEach
     void setUp() {

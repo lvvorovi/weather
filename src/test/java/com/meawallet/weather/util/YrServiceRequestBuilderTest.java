@@ -3,7 +3,6 @@ package com.meawallet.weather.util;
 import com.meawallet.weather.payload.YrApiServiceRequestDto;
 import com.meawallet.weather.properties.WeatherProperties;
 import com.meawallet.weather.test.util.WeatherTestUtil;
-import com.meawallet.weather.util.YrServiceRequestBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +37,7 @@ class YrServiceRequestBuilderTest {
 
         Assertions.assertEquals(expected, result);
     }
+
     @Test
     void build_whenNoAltParamProvided_thenReturnRequestDto() {
         YrApiServiceRequestDto expected = YrApiServiceRequestDto.builder()

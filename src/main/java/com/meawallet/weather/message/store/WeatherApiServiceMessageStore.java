@@ -11,10 +11,6 @@ public class WeatherApiServiceMessageStore {
     private WeatherApiServiceMessageStore() {
     }
 
-    public static String buildApiCallExceptionMessage(String message) {
-        return "Exception caught while contacting external api. Exception message: " + message;
-    }
-
     public static String buildApiCallMessage(String url) {
         return "Calling Weather API: " + url;
     }
