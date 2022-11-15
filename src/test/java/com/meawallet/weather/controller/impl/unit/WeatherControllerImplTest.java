@@ -1,8 +1,9 @@
-package com.meawallet.weather.web.controller.impl;
+package com.meawallet.weather.controller.impl.unit;
 
 import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.service.impl.WeatherServiceFacadeImpl;
+import com.meawallet.weather.web.controller.impl.WeatherControllerImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -11,15 +12,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
-import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
-import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_ALTITUDE;
-import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LAT;
-import static com.meawallet.weather.util.WeatherTestUtil.PRECISE_LON;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
+import static com.meawallet.weather.test.util.JsonTestUtil.jsonToErrorDto;
+import static com.meawallet.weather.test.util.JsonTestUtil.jsonToWeatherResponseDto;
+import static com.meawallet.weather.test.util.WeatherTestUtil.PRECISE_ALTITUDE;
+import static com.meawallet.weather.test.util.WeatherTestUtil.PRECISE_LAT;
+import static com.meawallet.weather.test.util.WeatherTestUtil.PRECISE_LON;
+import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS;
+import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
+import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WRONG_TYPE_PARAMS;
+import static com.meawallet.weather.test.util.WeatherTestUtil.weatherResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.timeout;

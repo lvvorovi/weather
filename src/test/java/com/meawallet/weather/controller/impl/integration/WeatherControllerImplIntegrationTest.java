@@ -1,18 +1,15 @@
-package com.meawallet.weather.web.controller.impl;
+package com.meawallet.weather.controller.impl.integration;
 
 import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.repository.WeatherRepository;
 import com.meawallet.weather.repository.entity.WeatherEntity;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -26,17 +23,16 @@ import org.springframework.web.client.RestTemplate;
 import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
-import static com.meawallet.weather.message.store.ExceptionHandlerMessageStore.buildInternalServerErrorMessage;
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiCallExceptionMessage;
-import static com.meawallet.weather.util.JsonTestUtil.jsonToErrorDto;
-import static com.meawallet.weather.util.JsonTestUtil.jsonToWeatherResponseDto;
-import static com.meawallet.weather.util.WeatherTestUtil.COMPLETE_NODE_STRING;
-import static com.meawallet.weather.util.WeatherTestUtil.CURRENT_HOUR_NODE_TEMPERATURE;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
-import static com.meawallet.weather.util.WeatherTestUtil.getRequiredHeaders;
-import static com.meawallet.weather.util.WeatherTestUtil.weatherEntityPreciseParams;
-import static com.meawallet.weather.util.WeatherTestUtil.weatherResponseDto;
+import static com.meawallet.weather.test.util.JsonTestUtil.jsonToErrorDto;
+import static com.meawallet.weather.test.util.JsonTestUtil.jsonToWeatherResponseDto;
+import static com.meawallet.weather.test.util.WeatherTestUtil.COMPLETE_NODE_STRING;
+import static com.meawallet.weather.test.util.WeatherTestUtil.CURRENT_HOUR_NODE_TEMPERATURE;
+import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS;
+import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_CONTROLLER_FIND_URL_WITH_PRECISE_PARAMS;
+import static com.meawallet.weather.test.util.WeatherTestUtil.getRequiredHeaders;
+import static com.meawallet.weather.test.util.WeatherTestUtil.weatherEntityPreciseParams;
+import static com.meawallet.weather.test.util.WeatherTestUtil.weatherResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-class WeatherControllerImplIntegrationTest {
+public class WeatherControllerImplIntegrationTest {
 
     @MockBean
     RestTemplate restTemplate;
@@ -136,8 +132,7 @@ class WeatherControllerImplIntegrationTest {
 
     @Test
     @WithMockUser
-    @ExtendWith(OutputCaptureExtension.class)
-    void findByLatAndLonAndAlt_whenRestTemplateThrowsException_thenReturnErrorResponse_and500(CapturedOutput output) throws Exception {
+    void findByLatAndLonAndAlt_whenRestTemplateThrowsException_thenReturnErrorResponse_and500() throws Exception {
         when(restTemplate.exchange(
                 WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS,
                 GET,
@@ -158,7 +153,6 @@ class WeatherControllerImplIntegrationTest {
         assertEquals(buildApiCallExceptionMessage("TestErrorMessage"), result.getMessage());
         assertEquals(INTERNAL_SERVER_ERROR.getReasonPhrase(), result.getError());
         assertNotNull(result.getTimeStamp());
-        assertThat(output.getOut()).contains(buildInternalServerErrorMessage(result));
 
         verify(restTemplate, times(1)).exchange(
                 WEATHER_API_URL_WITH_ALL_PRECISE_PARAMS,
@@ -169,9 +163,8 @@ class WeatherControllerImplIntegrationTest {
     }
 
     @Test
-    @WithMockUser(authorities = "read")
-    @ExtendWith(OutputCaptureExtension.class)
-    void findByLatAndLonAndAlt_whenDbThrowsPersistenceException_thenReturnErrorResponse_and500(CapturedOutput output) throws Exception {
+    @WithMockUser
+    void findByLatAndLonAndAlt_whenDbThrowsPersistenceException_thenReturnErrorResponse_and500() throws Exception {
         when(repository.findDtoByLatAndLonAndAltitudeAndTimeStamp(any(), any(), any(), any()))
                 .thenThrow(new PersistenceException("TestErrorMessage"));
 
@@ -188,7 +181,6 @@ class WeatherControllerImplIntegrationTest {
         assertThat(result.getMessage()).contains("TestErrorMessage");
         assertEquals(INTERNAL_SERVER_ERROR.getReasonPhrase(), result.getError());
         assertNotNull(result.getTimeStamp());
-        assertThat(output.getOut()).contains(buildInternalServerErrorMessage(result));
         verifyNoInteractions(restTemplate);
     }
 

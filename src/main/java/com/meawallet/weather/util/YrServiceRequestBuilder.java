@@ -1,27 +1,40 @@
 package com.meawallet.weather.util;
 
-import com.meawallet.weather.handler.exception.WeatherApiServiceException;
+import com.meawallet.weather.payload.YrApiServiceRequestDto;
+import com.meawallet.weather.properties.WeatherProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.constraints.Null;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_ALTITUDE;
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LAT;
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.WEATHER_API_PARAM_LON;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiInvalidRequestMessage;
-import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
-public class YrWeatherApiServiceUtil {
+@RequiredArgsConstructor
+public class YrServiceRequestBuilder {
 
-    public Map<String, String> buildUrlParams(Float lat, Float lon, Integer alt) {
+    private final WeatherProperties properties;
+
+    public YrApiServiceRequestDto build(Float lat, Float lon, Integer alt, HttpMethod httpMethod) {
+        return YrApiServiceRequestDto.builder()
+                .httpEntity(buildHttpEntity(properties.getUserAgentHeaderValue()))
+                .httpMethod(httpMethod)
+                .url(buildRequestUrl(properties.getApiUrlCompact(), buildUrlParams(lat, lon, alt)))
+                .build();
+    }
+
+    private Map<String, String> buildUrlParams(Float lat, Float lon, Integer alt) {
         Map<String, String> params = new HashMap<>();
         params.put(WEATHER_API_PARAM_LAT, lat.toString());
         params.put(WEATHER_API_PARAM_LON, lon.toString());
@@ -33,43 +46,31 @@ public class YrWeatherApiServiceUtil {
         return params;
     }
 
-    public String buildRequestUrl(String url, Map<String, String> params) {
-        String altNullUrl = UriComponentsBuilder.fromHttpUrl(url)
+    private String buildRequestUrl(String url, Map<String, String> params) {
+        String altitudeNullUrl = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam(WEATHER_API_PARAM_LAT, params.get(WEATHER_API_PARAM_LAT))
                 .queryParam(WEATHER_API_PARAM_LON, params.get(WEATHER_API_PARAM_LON))
                 .encode()
                 .toUriString();
 
         if (params.containsKey(WEATHER_API_PARAM_ALTITUDE)) {
-            return UriComponentsBuilder.fromHttpUrl(altNullUrl)
+            return UriComponentsBuilder.fromHttpUrl(altitudeNullUrl)
                     .queryParam(WEATHER_API_PARAM_ALTITUDE, params.get(WEATHER_API_PARAM_ALTITUDE))
                     .encode()
                     .toUriString();
         } else {
-            return altNullUrl;
+            return altitudeNullUrl;
         }
     }
 
-    public HttpHeaders getRequiredHeaders(String userAgentHeaderValue) {
+    private HttpHeaders buildRequiredHeaders(String userAgentHeaderValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(USER_AGENT, userAgentHeaderValue);
         headers.add(ACCEPT, APPLICATION_JSON_VALUE);
         return headers;
     }
 
-    public void validateBody(ResponseEntity<String> responseEntity) {
-        String body = responseEntity.getBody();
-
-        if (body == null || body.isBlank()) {
-            throw new WeatherApiServiceException(buildApiNoResponseMessage(responseEntity.getStatusCode()));
-        }
-    }
-
-    public void validateResponseStatus(ResponseEntity<String> responseEntity) {
-        boolean isNot200 = !responseEntity.getStatusCode().is2xxSuccessful();
-
-        if (isNot200) {
-            throw new WeatherApiServiceException(buildApiInvalidRequestMessage(responseEntity.getBody()));
-        }
+    private HttpEntity<Null> buildHttpEntity(String userAgentValue) {
+        return new HttpEntity<>(null, buildRequiredHeaders(userAgentValue));
     }
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 version = '0.1.0 SNAPSHOT'
-group 'com.meawallet'
+git group 'com.meawallet.weather'
 version '1.0-SNAPSHOT'
 
 task fatJar(type: Jar) {
@@ -34,7 +34,7 @@ dependencies {
     implementation 'com.h2database:h2:2.1.214'
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0'
     implementation 'org.apache.httpcomponents:httpclient'
 
     compileOnly 'org.projectlombok:lombok'
@@ -42,6 +42,12 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation 'org.junit.platform:junit-platform-suite-api'
+    testRuntimeOnly 'org.junit.platform:junit-platform-suite-engine'
+
 }
 
 test {

@@ -20,17 +20,14 @@ import static com.meawallet.weather.message.store.WeatherDeserializerMessageStor
 @RequiredArgsConstructor
 public class WeatherYrDtoDeserializer implements WeatherApiDtoDeserializer {
 
-    private final CustomStdDeserializer customStdDeserializer;
+    private final CustomStdDeserializer deserializer;
     private final WeatherDeserializerUtil util;
 
     @Override
     public WeatherApiDto deserializeApiResponse(String jsonString) {
-        ObjectMapper mapper = util.getWeatherObjectMapper(customStdDeserializer);
+        ObjectMapper mapper = util.getWeatherObjectMapper(deserializer);
         WeatherApiDto apiDto;
-
-        if (log.isDebugEnabled()) {
-            log.debug(buildYrDeserializerStartMessage(jsonString));
-        }
+        log.info(buildYrDeserializerStartMessage(jsonString));
 
         try {
             apiDto = mapper.readValue(jsonString, WeatherApiDto.class);
@@ -42,10 +39,7 @@ public class WeatherYrDtoDeserializer implements WeatherApiDtoDeserializer {
             throw new WeatherApiDtoDeserializerException(buildDeserializerNullResponseMessage(jsonString));
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(buildYrDeserializerEndMessage(apiDto.toString()));
-        }
-
+        log.info(buildYrDeserializerEndMessage(apiDto.toString()));
         return apiDto;
     }
 }

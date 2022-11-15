@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.meawallet.weather.util.WeatherTestUtil.weatherApiDto;
+import static com.meawallet.weather.test.util.WeatherTestUtil.weatherApiDto;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

@@ -1,4 +1,4 @@
-package com.meawallet.weather.util;
+package com.meawallet.weather.test.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
