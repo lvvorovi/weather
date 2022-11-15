@@ -3,7 +3,7 @@ package com.meawallet.weather.message.store;
 public class SwaggerMessageStore {
 
     //Weather
-    public static final String WEATHER_CONTROLLER_TAG_NAME = "Weather Data";
+    public static final String WEATHER_CONTROLLER_TAG_NAME = "Weather Controller";
     public static final String WEATHER_CONTROLLER_TAG_DESCRIPTION = "Provides GET method " +
             "to receive current hour temperature for specified location";
     public static final String WEATHER_OPERATION_VALUE = "Get Weather temperature";
@@ -38,8 +38,6 @@ public class SwaggerMessageStore {
     public static final String API_INFO_DESCRIPTION = "MeaWallet Weather Management in new feature project";
     public static final String API_INFO_VERSION = "0.1.0.SNAPSHOT";
 
-
     private SwaggerMessageStore() {
     }
-
 }

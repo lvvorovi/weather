@@ -136,6 +136,7 @@ class WeatherServiceImplTest {
     void deleteOutdated_whenFound_thenDelete() {
         List<WeatherEntity> entityList = List.of(weatherEntity(), weatherEntity());
         when(properties.getEntityTtlHours()).thenReturn(2);
+        when(properties.getIsMasterJvm()).thenReturn(true);
         when(repository.deleteByTimeStampBefore(any())).thenReturn(entityList);
 
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
@@ -148,13 +149,27 @@ class WeatherServiceImplTest {
     @Test
     void deleteOutdated_whenNotFound_thenDoNothing() {
         when(properties.getEntityTtlHours()).thenReturn(2);
+        when(properties.getIsMasterJvm()).thenReturn(true);
         when(repository.deleteByTimeStampBefore(any())).thenReturn(List.of());
 
         assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
 
         verify(repository, times(1)).deleteByTimeStampBefore(any());
+        verify(properties, times(1)).getIsMasterJvm();
+        verify(properties, times(1)).getEntityTtlHours();
         verifyNoMoreInteractions(repository, properties);
         verifyNoInteractions(validationService, mapper);
+    }
+
+    @Test
+    void deleteOutdated_whenNotMasterJvm_thenDoNothing() {
+        when(properties.getIsMasterJvm()).thenReturn(false);
+
+        assertThatNoException().isThrownBy(() -> victim.deleteOutdated());
+
+        verify(properties, times(1)).getIsMasterJvm();
+        verifyNoMoreInteractions(properties);
+        verifyNoInteractions(validationService, mapper, repository);
     }
 
 }

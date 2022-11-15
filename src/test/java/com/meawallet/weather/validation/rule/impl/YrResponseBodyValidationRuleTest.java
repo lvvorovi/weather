@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import static com.meawallet.weather.message.store.WeatherApiServiceMessageStore.buildApiNoResponseMessage;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class YrResponseBodyValidationRuleTest {

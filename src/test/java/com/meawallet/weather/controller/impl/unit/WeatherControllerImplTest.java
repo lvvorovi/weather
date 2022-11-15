@@ -4,10 +4,15 @@ import com.meawallet.weather.model.ErrorDto;
 import com.meawallet.weather.model.WeatherResponseDto;
 import com.meawallet.weather.service.impl.WeatherServiceFacadeImpl;
 import com.meawallet.weather.web.controller.impl.WeatherControllerImpl;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,6 +28,7 @@ import static com.meawallet.weather.test.util.WeatherTestUtil.WEATHER_CONTROLLER
 import static com.meawallet.weather.test.util.WeatherTestUtil.weatherResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -34,13 +40,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(WeatherControllerImpl.class)
+@Import({SimpleMeterRegistry.class, MockClock.class})
 class WeatherControllerImplTest {
 
     @MockBean
     WeatherServiceFacadeImpl service;
+    @MockBean
+    Counter counter;
 
     @Autowired
     MockMvc mvc;
+
+    @BeforeEach
+    void setUp() {
+        doNothing().when(counter).increment();
+    }
 
     @Test
     @WithMockUser
@@ -62,7 +76,6 @@ class WeatherControllerImplTest {
     @Test
     @WithMockUser
     void findByLatAndLonAndAlt_whenMissingParams_thenErrorResponse_and400() throws Exception {
-
         MvcResult mvcResult = mvc.perform(get(WEATHER_CONTROLLER_FIND_URL_MISSING_REQUIRED_PARAMS))
                 .andExpect(status().isBadRequest())
                 .andReturn();

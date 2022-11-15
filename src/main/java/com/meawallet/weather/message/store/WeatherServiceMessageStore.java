@@ -3,6 +3,7 @@ package com.meawallet.weather.message.store;
 import com.meawallet.weather.repository.entity.WeatherEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class WeatherServiceMessageStore {
 
@@ -32,8 +33,14 @@ public class WeatherServiceMessageStore {
                 " found in DB";
     }
 
-    public static String buildDeletedMessage(String id) {
-        return "WeatherEntity with id: " + id + " deleted from DB";
+    public static String buildDeletedMessage(List<WeatherEntity> deletedEntityList) {
+        StringBuilder result = new StringBuilder();
+        deletedEntityList.forEach(entity ->
+                result.append("\n")
+                        .append("WeatherEntity with id: ")
+                        .append(entity.getId())
+                        .append(" deleted from DB"));
+        return result.toString();
     }
 
     public static String buildLatValueWasAdjustedMessage(Float from, Float to) {
