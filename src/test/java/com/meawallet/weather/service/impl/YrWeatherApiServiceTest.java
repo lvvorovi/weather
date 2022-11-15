@@ -62,4 +62,5 @@ class YrWeatherApiServiceTest {
         verify(deserializer, times(1)).deserializeApiResponse(responseEntity.getBody());
         verifyNoMoreInteractions(requestBuilder, apiCallExecutor, responseValidator, deserializer);
     }
+
 }

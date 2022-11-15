@@ -5,7 +5,6 @@ import com.meawallet.weather.model.ErrorDto;
 import java.util.Arrays;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 public class ExceptionHandlerMessageStore {
 

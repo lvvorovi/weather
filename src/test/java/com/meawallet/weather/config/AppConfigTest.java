@@ -4,6 +4,7 @@ import com.meawallet.weather.properties.ConnectionProperties;
 import com.meawallet.weather.properties.TaskSchedulerProperties;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

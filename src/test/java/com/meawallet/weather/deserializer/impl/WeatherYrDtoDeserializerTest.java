@@ -85,5 +85,4 @@ class WeatherYrDtoDeserializerTest {
         verifyNoInteractions(deserializer);
     }
 
-
 }
